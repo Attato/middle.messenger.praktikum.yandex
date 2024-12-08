@@ -1,0 +1,256 @@
+.messenger {
+	display: flex;
+
+	.messenger__sidebar {
+		display: flex;
+		flex-direction: column;
+		max-width: 360px;
+		width: 100%;
+		height: 100vh;
+		background-color: #202124;
+
+		.messenger__sidebar-header {
+			padding: 16px;
+
+			.messenger__profile-link {
+				display: flex;
+				justify-content: flex-end;
+				align-items: flex-end;
+				font-size: 14px;
+				background: transparent;
+				border: 0;
+				margin-left: auto;
+
+				&:hover {
+					cursor: pointer;
+				}
+			}
+
+			.messenger__search-button {
+				display: flex;
+				align-items: flex-start;
+				justify-content: center;
+				gap: 4px;
+				width: 100%;
+				background-color: #2d2e31;
+				border: 1px solid transparent;
+				border-radius: 6px;
+				margin-top: 12px;
+				padding: 9px 16px;
+				transition: all 0.3s;
+				cursor: pointer;
+
+				&:hover {
+					background-color: #ffffff1f;
+				}
+			}
+		}
+
+		.chat-link {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 12px 16px;
+			border-top: 1px solid #444;
+
+			&:hover {
+				background-color: #2d2e31;
+				cursor: pointer;
+			}
+
+			&:last-child {
+				border-bottom: 1px solid #444;
+			}
+
+			.chat-link__avatar {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 20px;
+				font-weight: 600;
+				min-width: 48px;
+				height: 48px;
+				background-color: antiquewhite;
+				border-radius: 100%;
+				color: black;
+			}
+
+			.chat-link__main {
+				display: flex;
+				justify-content: space-between;
+				width: 100%;
+
+				.chat-link__header {
+					display: flex;
+					flex-direction: column;
+					gap: 2px;
+
+					h2 {
+						color: white;
+						font-size: 16px;
+						font-weight: 400;
+					}
+
+					p {
+						font-size: 14px;
+					}
+				}
+
+				.chat-link__data {
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
+					align-items: flex-end;
+
+					span {
+						font-size: 12px;
+					}
+
+					.chat-link__count {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						width: 20px;
+						height: 20px;
+						background-color: #3369f3;
+						color: white;
+						border-radius: 100%;
+						font-size: 11px;
+					}
+				}
+			}
+		}
+
+		.error {
+			display: flex;
+			justify-content: space-between;
+			padding: 16px;
+
+			a:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	.messenger__chat {
+		width: 100%;
+		height: 100vh;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.modal {
+		display: none;
+		justify-content: center;
+		align-items: center;
+		position: fixed;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(1px);
+		cursor: pointer;
+
+		.modal-content {
+			background-color: #202124;
+			padding: 20px;
+			border: 1px solid #444;
+			width: 80%;
+			max-width: 500px;
+			border-radius: 8px;
+			cursor: auto;
+
+			.close-button {
+				color: #aaa;
+				font-size: 28px;
+				font-weight: bold;
+				position: absolute;
+				top: 10px;
+				right: 20px;
+				cursor: pointer;
+				transition: all 0.2s;
+
+				&:hover,
+				&:focus {
+					color: white;
+					text-decoration: none;
+					cursor: pointer;
+				}
+			}
+
+			.profile {
+				display: flex;
+				flex-direction: column;
+				gap: 32px;
+
+				.profile-personalization {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: center;
+					gap: 12px;
+
+					.profile-personalization__avatar {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						font-size: 48px;
+						font-weight: 600;
+						width: 128px;
+						height: 128px;
+						background-color: antiquewhite;
+						border-radius: 100%;
+						color: black;
+					}
+
+					h2 {
+						font-size: 24px;
+					}
+				}
+
+				.profile__fields {
+					display: flex;
+					flex-direction: column;
+					gap: 12px;
+
+					.profile__field {
+						display: flex;
+						justify-content: space-between;
+						border-bottom: 1px solid #444;
+						padding-bottom: 8px;
+
+						span {
+							color: white;
+						}
+					}
+				}
+
+				.profile__actions {
+					display: flex;
+					flex-direction: column;
+					gap: 12px;
+
+					.profile__action {
+						display: flex;
+						justify-content: space-between;
+						background: transparent;
+						border: 0;
+						font-size: 16px;
+						border-bottom: 1px solid #444;
+						padding-bottom: 8px;
+					}
+
+					button {
+						color: #4caf50;
+						cursor: pointer;
+					}
+
+					a {
+						color: #e91e1e;
+					}
+				}
+			}
+		}
+	}
+}
