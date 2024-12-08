@@ -43,7 +43,7 @@ const context: Context = {
 	],
 	whiteButton: "Зарегистрироваться",
 	grayButton: "Вернуться",
-	whiteButtonLink: "",
+	whiteButtonLink: "/",
 	grayButtonLink: "/",
 };
 
