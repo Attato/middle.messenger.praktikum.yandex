@@ -1,6 +1,9 @@
 {
 	"name": "middle.messenger.praktikum.yandex",
 	"version": "1.0.0",
+	"engines": {
+		"node": ">=16"
+	},
 	"scripts": {
 		"start": "vite preview",
 		"dev": "vite --port 3000",
