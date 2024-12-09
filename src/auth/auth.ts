@@ -43,8 +43,8 @@ const context: Context = {
 	],
 	whiteButton: "Зарегистрироваться",
 	grayButton: "Вернуться",
-	whiteButtonLink: "/",
-	grayButtonLink: "/",
+	whiteButtonLink: "/index.html",
+	grayButtonLink: "/index.html",
 };
 
 const sourceElement = document.getElementById("auth-template");

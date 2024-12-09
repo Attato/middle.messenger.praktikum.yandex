@@ -34,8 +34,8 @@ const authData: Context = {
 	],
 	whiteButton: "Авторизоваться",
 	grayButton: "Нет аккаунта?",
-	whiteButtonLink: "/chat/chat.html",
-	grayButtonLink: "/auth/signup.html",
+	whiteButtonLink: "/src/chat/chat.html",
+	grayButtonLink: "/src/auth/signup.html",
 };
 
 const templateElement = document.getElementById("auth-template");

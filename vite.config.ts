@@ -1,16 +1,14 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	root: "./src",
 	build: {
-		outDir: "../dist",
 		rollupOptions: {
 			input: {
-				homepage: "/index.html",
-				signUp: "/auth/signup.html",
-				chat: "/chat/chat.html",
-				page404: "/error/404.html",
-				page500: "/error/500.html",
+				homePage: "/index.html",
+				signUp: "/src/auth/signup.html",
+				chat: "/src/chat/chat.html",
+				page404: "/src/error/404.html",
+				page500: "/src/error/500.html",
 			},
 		},
 	},
