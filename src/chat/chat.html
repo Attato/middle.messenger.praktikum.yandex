@@ -110,13 +110,19 @@
                             <div class="profile-personalization">
                                 <div class="profile-personalization__avatar">{{avatar}}</div>
                             </div>
-                            <div class="profile__fields">
+                            <form class="profile__fields">
                                 {{#each fields}}
-                                <div class="profile__field">
-                                    <span>{{label}}</span> {{value}}
-                                </div>
+                                    <div class="profile__field">
+                                        <label for="field-{{@index}}">{{label}}</label>
+                                        <input 
+                                            type="text" 
+                                            id="field-{{@index}}" 
+                                            value="{{value}}" 
+                                            name="{{label}}" 
+                                        />
+                                    </div>
                                 {{/each}}
-                            </div>
+                            </form>
                             <div class="profile__actions">
                                 <button class="profile__action" id="save-profile-data-link">Сохранить</button>
                             </div>

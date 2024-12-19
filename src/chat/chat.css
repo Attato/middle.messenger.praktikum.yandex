@@ -229,6 +229,7 @@
 }
 .messenger .modal .modal-content .profile .profile__fields .profile__field {
 	display: flex;
+	align-items: center;
 	justify-content: space-between;
 	border-bottom: 1px solid #49494b;
 	padding-bottom: 8px;
@@ -242,6 +243,19 @@
 	.profile__field
 	span {
 	color: #fafafa;
+}
+.messenger
+	.modal
+	.modal-content
+	.profile
+	.profile__fields
+	.profile__field
+	input {
+	background: #1b1b1e;
+	border: 1px solid #49494b;
+	padding: 8px 12px;
+	border-radius: 6px;
+	font-size: 14px;
 }
 .messenger .modal .modal-content .profile .profile__actions {
 	display: flex;
