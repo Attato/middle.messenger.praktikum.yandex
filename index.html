@@ -18,7 +18,7 @@
                     <div class="auth__wrap">
                         <h2 class="auth__title">{{title}}</h2>
 
-                        <div class="auth__field">
+                        <form class="auth__field">
                             {{#each fields}}
                             <label class="auth__label">
                                 {{label}}
@@ -30,7 +30,7 @@
                                 />
                             </label>
                             {{/each}}
-                        </div>
+                        </form>
 
                         <div class="auth__actions">
                             <a href="{{whiteButtonLink}}" class="button__white">{{whiteButton}}</a>

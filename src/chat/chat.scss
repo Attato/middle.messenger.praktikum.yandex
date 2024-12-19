@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .messenger {
 	display: flex;
 
@@ -7,7 +9,7 @@
 		max-width: 360px;
 		width: 100%;
 		height: 100vh;
-		background-color: #202124;
+		background-color: $background-color-light;
 
 		.messenger__sidebar-header {
 			padding: 16px;
@@ -32,7 +34,7 @@
 				justify-content: center;
 				gap: 4px;
 				width: 100%;
-				background-color: #2d2e31;
+				background-color: $gray-background;
 				border: 1px solid transparent;
 				border-radius: 6px;
 				margin-top: 12px;
@@ -41,7 +43,7 @@
 				cursor: pointer;
 
 				&:hover {
-					background-color: #ffffff1f;
+					background-color: $gray-background-hover;
 				}
 			}
 		}
@@ -51,15 +53,15 @@
 			align-items: center;
 			gap: 12px;
 			padding: 12px 16px;
-			border-top: 1px solid #444;
+			border-top: 1px solid $border-color;
 
 			&:hover {
-				background-color: #2d2e31;
+				background-color: $gray-background;
 				cursor: pointer;
 			}
 
 			&:last-child {
-				border-bottom: 1px solid #444;
+				border-bottom: 1px solid $border-color;
 			}
 
 			.chat-link__avatar {
@@ -70,9 +72,9 @@
 				font-weight: 600;
 				min-width: 48px;
 				height: 48px;
-				background-color: antiquewhite;
+				background-color: $avatar-background;
 				border-radius: 100%;
-				color: black;
+				color: $gray-background;
 			}
 
 			.chat-link__main {
@@ -86,13 +88,13 @@
 					gap: 2px;
 
 					h2 {
-						color: white;
 						font-size: 16px;
 						font-weight: 400;
 					}
 
 					p {
 						font-size: 14px;
+						color: $gray-color;
 					}
 				}
 
@@ -112,8 +114,8 @@
 						justify-content: center;
 						width: 20px;
 						height: 20px;
-						background-color: #3369f3;
-						color: white;
+						background-color: $blue-color;
+						color: $white-color;
 						border-radius: 100%;
 						font-size: 11px;
 					}
@@ -148,21 +150,21 @@
 		z-index: 1;
 		width: 100%;
 		height: 100%;
-		background-color: rgba(0, 0, 0, 0.4);
+		background-color: $modal-background;
 		backdrop-filter: blur(1px);
 		cursor: pointer;
 
 		.modal-content {
-			background-color: #202124;
+			background-color: $background-color-light;
 			padding: 20px;
-			border: 1px solid #444;
+			border: 1px solid $border-color;
 			width: 80%;
 			max-width: 500px;
 			border-radius: 8px;
 			cursor: auto;
 
 			.close-button {
-				color: #aaa;
+				color: $background-color-light;
 				font-size: 28px;
 				font-weight: bold;
 				position: absolute;
@@ -173,7 +175,7 @@
 
 				&:hover,
 				&:focus {
-					color: white;
+					color: $white-color;
 					text-decoration: none;
 					cursor: pointer;
 				}
@@ -199,9 +201,9 @@
 						font-weight: 600;
 						width: 128px;
 						height: 128px;
-						background-color: antiquewhite;
+						background-color: $avatar-background;
 						border-radius: 100%;
-						color: black;
+						color: $gray-background;
 					}
 
 					h2 {
@@ -217,11 +219,12 @@
 					.profile__field {
 						display: flex;
 						justify-content: space-between;
-						border-bottom: 1px solid #444;
+						border-bottom: 1px solid $border-color;
 						padding-bottom: 8px;
+						color: $gray-color;
 
 						span {
-							color: white;
+							color: $white-color;
 						}
 					}
 				}
@@ -237,17 +240,17 @@
 						background: transparent;
 						border: 0;
 						font-size: 16px;
-						border-bottom: 1px solid #444;
+						border-bottom: 1px solid $border-color;
 						padding-bottom: 8px;
 					}
 
 					button {
-						color: #4caf50;
+						color: $green-color;
 						cursor: pointer;
 					}
 
 					a {
-						color: #e91e1e;
+						color: $red-color;
 					}
 				}
 			}

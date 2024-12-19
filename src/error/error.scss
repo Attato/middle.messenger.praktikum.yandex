@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .error {
 	display: flex;
 	flex-direction: column;
@@ -6,8 +8,7 @@
 	width: 100%;
 	padding: 16px;
 	height: 100vh;
-	background-image: linear-gradient(#1f1f1f 1px, transparent 1px),
-		linear-gradient(90deg, #1f1f1f 1px, transparent 1px);
+	background-image: $grid-background;
 	background-size: 20px 20px;
 
 	h1 {
@@ -17,7 +18,7 @@
 	p {
 		text-decoration: underline;
 		text-decoration-style: wavy;
-		text-decoration-color: #444;
+		text-decoration-color: $border-color;
 		text-decoration-skip-ink: none;
 	}
 
@@ -25,15 +26,15 @@
 		display: block;
 		text-align: center;
 		font-size: 14px;
-		color: #1b1b1e;
+		color: $background-color;
 		padding: 10px;
 		border-radius: 6px;
 		transition: all 0.3s;
-		background-color: #fafafa;
+		background-color: $white-color;
 		margin-top: 12px;
 
 		&:hover {
-			background-color: #bfbfbf;
+			background-color: $white-color-hover;
 		}
 	}
 }

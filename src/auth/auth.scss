@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .container {
 	max-width: 1280px;
 	margin: auto;
@@ -17,8 +19,8 @@
 			flex-direction: column;
 			max-width: 400px;
 			width: 100%;
-			background: #1b1b1e;
-			border: 1px solid #49494b;
+			background: $background-color;
+			border: 1px solid $border-color;
 			border-radius: 12px;
 			padding: 16px;
 			gap: 12px;
@@ -42,8 +44,8 @@
 					font-size: 14px;
 
 					.auth__input {
-						background: #1b1b1e;
-						border: 1px solid #49494b;
+						background: $background-color;
+						border: 1px solid $border-color;
 						padding: 8px 12px;
 						border-radius: 6px;
 						font-size: 14px;
@@ -61,32 +63,32 @@
 					display: block;
 					text-align: center;
 					font-size: 14px;
-					color: #1b1b1e;
+					color: $background-color;
 					padding: 10px;
 					border-radius: 6px;
 					transition: all 0.3s;
 				}
 
 				.button__white {
-					background-color: #fafafa;
+					background-color: $white-color;
 					margin-top: 8px;
 
 					&:hover {
-						background-color: #bfbfbf;
+						background-color: $white-color-hover;
 					}
 				}
 
 				hr {
 					border-top: 0;
-					border-color: #49494b;
+					border-color: $border-color;
 				}
 
 				.button__gray {
-					background-color: #2d2e31;
-					color: #d6d6d6;
+					background-color: $gray-background;
+					color: $white-color;
 
 					&:hover {
-						background-color: #3b3c3f;
+						background-color: $gray-background-hover;
 					}
 				}
 			}
