@@ -1,17 +1,17 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: math;
-  color: #fafafa;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: math;
+	color: #fafafa;
 }
 
 a {
-  text-decoration: none;
-  color: inherit;
+	text-decoration: none;
+	color: inherit;
 }
 
 body {
-  background: #1b1b1e;
-  min-height: 100vh;
-}/*# sourceMappingURL=global.css.map */
+	background: #1b1b1e;
+	min-height: 100vh;
+}
