@@ -15,15 +15,22 @@
                 <header class="messenger__sidebar-header">
                     <button id="profile-link" class="messenger__profile-link">
                         Профиль
-                        <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="icon icon--size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        <svg width="16" height="16"
+                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor"
+                            class="icon icon--size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                         </svg>
                     </button>
 
                     <button class="messenger__search-button">
-                        <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <svg width="16" height="16"
+                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor"
+                            class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                         </svg>
@@ -66,8 +73,10 @@
             <!-- Профиль -->
             <div id="profile-modal" class="modal">
                 <div class="modal-content">
-                    <span id="close-modal" class="close-button">&times;</span>
-                    <script id="profile-template" type="text/x-handlebars-template">
+                    <span id="close-profile-modal"
+                        class="close-button">&times;</span>
+                    <script id="profile-template"
+                        type="text/x-handlebars-template">
                         <div class="profile">
                             <div class="profile-personalization">
                                 <div class="profile-personalization__avatar">{{avatar}}</div>
@@ -81,15 +90,41 @@
                                 {{/each}}
                             </div>
                             <div class="profile__actions">
-                                {{#each actions}}
-                                <button class="profile__action">{{this}}</button>
-                                {{/each}}
+                                <button class="profile__action" id="edit-profile-data-link">Изменить данные</button>
+                                <button class="profile__action" id="edit-password-link">Изменить пароль</button>
                                 <a href="/index.html" class="profile__action">Выйти</a>
                             </div>
                         </div>
                     </script>
                 </div>
             </div>
+
+            <!-- Редактирование профиля -->
+            <div id="edit-profile-data-modal" class="modal">
+                <div class="modal-content">
+                    <span id="close-edit-profile-modal"
+                        class="close-button">&times;</span>
+                    <script id="edit-profile-template"
+                        type="text/x-handlebars-template">
+                        <div class="profile">
+                            <div class="profile-personalization">
+                                <div class="profile-personalization__avatar">{{avatar}}</div>
+                            </div>
+                            <div class="profile__fields">
+                                {{#each fields}}
+                                <div class="profile__field">
+                                    <span>{{label}}</span> {{value}}
+                                </div>
+                                {{/each}}
+                            </div>
+                            <div class="profile__actions">
+                                <button class="profile__action" id="save-profile-data-link">Сохранить</button>
+                            </div>
+                        </div>
+                    </script>
+                </div>
+            </div>
+
         </main>
 
         <script src="chat.ts" type="module"></script>
