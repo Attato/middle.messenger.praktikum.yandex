@@ -1,0 +1,36 @@
+.error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 16px;
+	height: 100vh;
+	background-image: linear-gradient(#1f1f1f 1px, transparent 1px),
+		linear-gradient(90deg, #1f1f1f 1px, transparent 1px);
+	background-size: 20px 20px;
+}
+.error h1 {
+	font-size: 32px;
+}
+.error p {
+	text-decoration: underline;
+	text-decoration-style: wavy;
+	text-decoration-color: #49494b;
+	-webkit-text-decoration-skip-ink: none;
+	text-decoration-skip-ink: none;
+}
+.error a {
+	display: block;
+	text-align: center;
+	font-size: 14px;
+	color: #1b1b1e;
+	padding: 10px;
+	border-radius: 6px;
+	transition: all 0.3s;
+	background-color: #fafafa;
+	margin-top: 12px;
+}
+.error a:hover {
+	background-color: #bfbfbf;
+}

@@ -1,0 +1,40 @@
+@import "../../variables";
+
+.error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 16px;
+	height: 100vh;
+	background-image: $grid-background;
+	background-size: 20px 20px;
+
+	h1 {
+		font-size: 32px;
+	}
+
+	p {
+		text-decoration: underline;
+		text-decoration-style: wavy;
+		text-decoration-color: $border-color;
+		text-decoration-skip-ink: none;
+	}
+
+	a {
+		display: block;
+		text-align: center;
+		font-size: 14px;
+		color: $background-color;
+		padding: 10px;
+		border-radius: 6px;
+		transition: all 0.3s;
+		background-color: $white-color;
+		margin-top: 12px;
+
+		&:hover {
+			background-color: $white-color-hover;
+		}
+	}
+}
