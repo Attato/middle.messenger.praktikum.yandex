@@ -9,7 +9,7 @@ export function attachValidationToForm(form: HTMLFormElement) {
 				| HTMLInputElement
 				| HTMLTextAreaElement;
 			const error = validateField(target.name, target.value);
-			displayError(target, "* " + error);
+			displayError(target, error);
 		});
 	});
 
