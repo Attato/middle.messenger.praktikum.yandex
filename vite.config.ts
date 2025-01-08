@@ -5,10 +5,10 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				homePage: "/index.html",
-				signUp: "/src/auth/signup.html",
-				chat: "/src/chat/chat.html",
-				page404: "/src/error/404.html",
-				page500: "/src/error/500.html",
+				signUp: "/src/pages/auth/signup.html",
+				chat: "/src/pages/chat/chat.html",
+				page404: "/src/pages/error/404.html",
+				page500: "/src/pages/error/500.html",
 			},
 		},
 	},
