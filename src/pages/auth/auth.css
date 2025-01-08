@@ -29,23 +29,10 @@
   font-weight: 500;
   margin-top: 18px;
 }
-.container .auth .auth__wrap .auth__field {
+.container .auth .auth__wrap .input__wrap {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-.container .auth .auth__wrap .auth__field .auth__label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 14px;
-}
-.container .auth .auth__wrap .auth__field .auth__label .auth__input {
-  background: #1b1b1e;
-  border: 1px solid #49494b;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 14px;
 }
 .container .auth .auth__wrap .auth__actions {
   display: flex;
