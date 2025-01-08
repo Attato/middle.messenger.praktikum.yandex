@@ -9,31 +9,15 @@
     </head>
 
     <body>
-        <div class="container" id="auth"></div>
+        <div class="container">
+            <div id="auth"></div>
+        </div>
 
-        <script id="auth-template" type="text/x-handlebars-template">
-            <main class="auth">
-                <form class="auth__wrap">
-                    <h2 class="auth__title">{{title}}</h2>
 
-                    {{#each fields}}
-                    <div class="auth__field">
-                        <label class="auth__label">
-                            {{label}}
-                            <input class="auth__input" type="{{type}}" name="{{name}}" placeholder="{{placeholder}}">
-                        </label>
-                    </div>
-                    {{/each}}
-
-                    <div class="auth__actions">
-                        <a href="{{whiteButtonLink}}" class="button__white">{{whiteButton}}</a>
-                        <hr>
-                        <a href="{{grayButtonLink}}" class="button__gray">{{grayButton}}</a>
-                    </div>
-                </form>
-            </main>
-        </script>
-
-        <script src="auth.ts" type="module"></script>
+        <script src="../../components/EventBus.ts" type="module"></script>
+        <script src="../../components/Input.ts" type="module"></script>
+        <script src="./utils/auth.ts" type="module"></script>
     </body>
 </html>
+
+
