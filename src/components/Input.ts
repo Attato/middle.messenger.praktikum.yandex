@@ -1,5 +1,4 @@
 import { EventBus } from "./EventBus";
-import styles from "./Input.module.css";
 
 interface InputProps {
 	label: string;
@@ -21,13 +20,9 @@ export class Input {
 
 	private createElement(): HTMLElement {
 		const div = document.createElement("div");
-		div.classList.add(styles.field);
-
 		const label = document.createElement("label");
-		label.classList.add(styles.label);
-
 		const input = document.createElement("input");
-		input.classList.add(styles.input);
+
 		input.type = this.props.type;
 		input.name = this.props.name;
 		input.placeholder = this.props.placeholder;
