@@ -1,5 +1,5 @@
 import { EventBus } from "./EventBus";
-import styles from "./Input.module.scss";
+import styles from "./Input.module.css";
 
 interface InputProps {
 	label: string;
