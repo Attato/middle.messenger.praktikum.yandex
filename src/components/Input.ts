@@ -2,12 +2,13 @@ import { EventBus } from "./EventBus";
 import styles from "./Input.module.scss";
 import { Block } from "./Block";
 
-interface InputProps {
+export interface InputProps {
 	label: string;
 	type: string;
 	name: string;
 	placeholder: string;
 	events?: Record<string, (event: Event) => void>;
+	autocomplete?: string;
 }
 
 export class Input extends Block {
@@ -28,6 +29,10 @@ export class Input extends Block {
 		input.type = this.props.type;
 		input.name = this.props.name;
 		input.placeholder = this.props.placeholder;
+
+		if (this.props.autocomplete) {
+			input.setAttribute("autocomplete", this.props.autocomplete);
+		}
 
 		label.textContent = this.props.label;
 		label.appendChild(input);

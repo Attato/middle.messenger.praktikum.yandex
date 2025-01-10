@@ -1,18 +1,11 @@
 import Handlebars from "handlebars";
 import { EventBus } from "../../../components/EventBus";
-import { Input } from "../../../components/Input";
+import { Input, InputProps } from "../../../components/Input";
 import { attachValidationToForm } from "./formValidator";
-
-interface Field {
-	label: string;
-	type: string;
-	name: string;
-	placeholder: string;
-}
 
 interface Context {
 	title: string;
-	fields: Field[];
+	fields: InputProps[];
 	whiteButton: string;
 	whiteButtonLink: string;
 	grayButton: string;
@@ -36,6 +29,7 @@ const context: Context = {
 			type: "password",
 			name: "password",
 			placeholder: "Пароль",
+			autocomplete: "on",
 		},
 		{
 			label: "Телефон",

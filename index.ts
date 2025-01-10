@@ -1,17 +1,10 @@
 import Handlebars from "handlebars";
-import { Input } from "./src/components/Input";
+import { Input, InputProps } from "./src/components/Input";
 import { EventBus } from "./src/components/EventBus";
-
-interface Field {
-	label: string;
-	type: string;
-	name: string;
-	placeholder: string;
-}
 
 interface Context {
 	title: string;
-	fields: Field[];
+	fields: InputProps[];
 	whiteButton: string;
 	whiteButtonLink: string;
 	grayButton: string;
@@ -32,6 +25,7 @@ const authData: Context = {
 			type: "password",
 			name: "password",
 			placeholder: "Пароль",
+			autocomplete: "on",
 		},
 	],
 	whiteButton: "Авторизоваться",
