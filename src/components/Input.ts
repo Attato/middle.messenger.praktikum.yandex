@@ -1,29 +1,27 @@
 import { EventBus } from "./EventBus";
 import styles from "./Input.module.scss";
+import { Block } from "./Block";
 
 interface InputProps {
 	label: string;
 	type: string;
 	name: string;
 	placeholder: string;
+	events?: Record<string, (event: Event) => void>;
 }
 
-export class Input {
-	private props: InputProps;
-	private eventBus: EventBus;
-	private element: HTMLElement;
-
+export class Input extends Block {
 	constructor(props: InputProps, eventBus: EventBus) {
-		this.props = props;
-		this.eventBus = eventBus;
-		this.element = this.createElement();
+		super(props, eventBus);
 	}
 
-	private createElement(): HTMLElement {
+	protected createElement(): HTMLElement {
 		const div = document.createElement("div");
 		div.classList.add(styles.field);
+
 		const label = document.createElement("label");
 		label.classList.add(styles.label);
+
 		const input = document.createElement("input");
 		input.classList.add(styles.input);
 
@@ -31,23 +29,15 @@ export class Input {
 		input.name = this.props.name;
 		input.placeholder = this.props.placeholder;
 
-		input.addEventListener("input", () => {
-			this.handleInputChange(input.value);
-		});
-
 		label.textContent = this.props.label;
 		label.appendChild(input);
 
 		div.appendChild(label);
 
+		if (this.props.events?.input) {
+			input.addEventListener("input", this.props.events.input);
+		}
+
 		return div;
-	}
-
-	private handleInputChange(value: string): void {
-		this.eventBus.emit("inputChange", { name: this.props.name, value });
-	}
-
-	public getElement(): HTMLElement {
-		return this.element;
 	}
 }
