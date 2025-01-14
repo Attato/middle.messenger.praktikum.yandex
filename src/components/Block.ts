@@ -1,11 +1,13 @@
 import { EventBus } from "./EventBus";
 
-export class Block {
-	protected props: any;
+export abstract class Block<
+	Props extends Record<string, any> = Record<string, any>,
+> {
+	protected props: Props;
 	protected eventBus: EventBus;
 	protected element: HTMLElement;
 
-	constructor(props: any, eventBus: EventBus) {
+	constructor(props: Props, eventBus: EventBus) {
 		this.props = props;
 		this.eventBus = eventBus;
 		this.element = this.createElement();

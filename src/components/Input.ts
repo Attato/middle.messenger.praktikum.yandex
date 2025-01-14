@@ -11,7 +11,7 @@ export interface InputProps {
 	autocomplete?: string;
 }
 
-export class Input extends Block {
+export class Input extends Block<InputProps> {
 	constructor(props: InputProps, eventBus: EventBus) {
 		super(props, eventBus);
 	}
@@ -37,11 +37,11 @@ export class Input extends Block {
 		label.textContent = this.props.label;
 		label.appendChild(input);
 
-		div.appendChild(label);
-
 		if (this.props.events?.input) {
 			input.addEventListener("input", this.props.events.input);
 		}
+
+		div.appendChild(label);
 
 		return div;
 	}
