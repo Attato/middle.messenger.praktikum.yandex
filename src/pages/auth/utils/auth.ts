@@ -1,6 +1,7 @@
 import Handlebars from "handlebars";
-import { Input, InputProps } from "./src/components/Input";
-import { EventBus } from "./src/components/EventBus";
+import { EventBus } from "../../../components/EventBus";
+import { Input, InputProps } from "../../../components/Input";
+import { attachValidationToForm } from "./formValidator";
 
 interface Context {
 	title: string;
@@ -11,15 +12,18 @@ interface Context {
 	grayButtonLink: string;
 }
 
-const authData: Context = {
-	title: "Вход",
+const context: Context = {
+	title: "Регистрация",
 	fields: [
+		{ label: "Имя", type: "text", name: "first_name", placeholder: "Имя" },
 		{
-			label: "Логин",
+			label: "Фамилия",
 			type: "text",
-			name: "login",
-			placeholder: "Логин",
+			name: "second_name",
+			placeholder: "Фамилия",
 		},
+		{ label: "Логин", type: "text", name: "login", placeholder: "Логин" },
+		{ label: "Почта", type: "text", name: "email", placeholder: "Почта" },
 		{
 			label: "Пароль",
 			type: "password",
@@ -27,11 +31,17 @@ const authData: Context = {
 			placeholder: "Пароль",
 			autocomplete: "on",
 		},
+		{
+			label: "Телефон",
+			type: "tel",
+			name: "phone",
+			placeholder: "Телефон",
+		},
 	],
-	whiteButton: "Авторизоваться",
-	grayButton: "Нет аккаунта?",
-	whiteButtonLink: "/src/pages/chat/chat.html",
-	grayButtonLink: "/src/pages/auth/signup.html",
+	whiteButton: "Зарегистрироваться",
+	grayButton: "Вернуться",
+	whiteButtonLink: "/index.html",
+	grayButtonLink: "/index.html",
 };
 
 const templateSource = `
@@ -54,7 +64,7 @@ const authElement = document.getElementById("auth");
 const eventBus = new EventBus();
 
 const template = Handlebars.compile(templateSource);
-const html = template(authData);
+const html = template(context);
 
 if (authElement) {
 	authElement.innerHTML = html;
@@ -62,10 +72,15 @@ if (authElement) {
 	const inputWrapper = document.getElementById("input-wrapper");
 
 	if (inputWrapper) {
-		authData.fields.forEach((field) => {
+		context.fields.forEach((field) => {
 			const inputComponent = new Input(field, eventBus);
 			inputWrapper.appendChild(inputComponent.getElement());
 		});
+	}
+
+	const form = authElement.querySelector("form") as HTMLFormElement;
+	if (form) {
+		attachValidationToForm(form);
 	}
 
 	eventBus.on("inputChange", (data: { name: string; value: string }) => {

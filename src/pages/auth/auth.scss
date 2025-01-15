@@ -1,4 +1,4 @@
-@import "../../variables";
+@use "../../../variables" as *;
 
 .container {
 	max-width: 1280px;
@@ -32,25 +32,10 @@
 				margin-top: 18px;
 			}
 
-			.auth__field {
+			.input__wrap {
 				display: flex;
 				flex-direction: column;
 				gap: 8px;
-
-				.auth__label {
-					display: flex;
-					flex-direction: column;
-					gap: 4px;
-					font-size: 14px;
-
-					.auth__input {
-						background: $background-color;
-						border: 1px solid $border-color;
-						padding: 8px 12px;
-						border-radius: 6px;
-						font-size: 14px;
-					}
-				}
 			}
 
 			.auth__actions {

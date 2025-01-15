@@ -4,8 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Яндекс Практикум · Мессенджер</title>
-        <link rel="stylesheet" href="/global.css" />
-        <link rel="stylesheet" href="chat.css" />
+        <link rel="stylesheet" href="/global.scss" />
+        <link rel="stylesheet" href="chat.scss" />
     </head>
 
     <body>
@@ -40,16 +40,15 @@
 
                 <div id="chat"></div>
 
-                <script id="chat-template" type="text/x-handlebars-template">
+               <script id="chat-template" type="text/x-handlebars-template">
                     {{#each this}}
-                    <section class="chat-link">
+                    <section class="chat-link" data-chat-id="{{@index}}">
                         <div alt="Аватар" class="chat-link__avatar">{{avatar}}</div>
                         <div class="chat-link__main">
                             <div class="chat-link__header">
                                 <h2>{{name}}</h2>
                                 <p>{{lastMessage}}</p>
                             </div>
-
                             <div class="chat-link__data">
                                 <span datetime="{{lastMessageTime}}">{{lastMessageTime}}</span>
                                 {{#if unreadCount}}
@@ -60,14 +59,38 @@
                     </section>
                     {{/each}}
                 </script>
+
                 <div class="error">
-                    <a href="/src/error/404.html">Страница 404</a>
-                    <a href="/src/error/500.html">Страница 500</a>
+                    <a href="/src/pages/error/404.html">Страница 404</a>
+                    <a href="/src/pages/error/500.html">Страница 500</a>
                 </div>
             </nav>
 
-            <section class="messenger__chat">
+            <!-- Заглушка
+            <section class="select__chat" id="select-chat">
                 <p>Выберите чат, чтобы отправить сообщение</p>
+            </section> -->
+
+            <!-- Чат -->
+            <section class="messenger__chat" id="messenger-chat">
+                <header class="chat-header">
+                    <h2 id="chat-header-name"></h2>
+                </header>
+
+                <div class="chat-messages" id="chat-messages"></div>
+
+                <footer class="chat-footer">
+                    <form id="message-form" class="message-form">
+                        <input 
+                            type="text" 
+                            name="message" 
+                            id="message" 
+                            class="message-form__input" 
+                            placeholder="Введите сообщение..." 
+                            required
+                        />
+                    </form>
+                </footer>
             </section>
 
             <!-- Профиль -->
@@ -133,6 +156,6 @@
 
         </main>
 
-        <script src="chat.ts" type="module"></script>
+        <script src="./utils/main.ts" type="module"></script>
     </body>
 </html>
