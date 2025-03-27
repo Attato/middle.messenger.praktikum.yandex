@@ -40,8 +40,8 @@ const context: Context = {
 	],
 	whiteButton: "Зарегистрироваться",
 	grayButton: "Вернуться",
-	whiteButtonLink: "/index.html",
-	grayButtonLink: "/index.html",
+	whiteButtonLink: "/",
+	grayButtonLink: "/",
 };
 
 const templateSource = `
@@ -52,38 +52,40 @@ const templateSource = `
             <div class="input__wrap" id="input-wrapper"></div>
 
             <div class="auth__actions">
-                <a href="{{whiteButtonLink}}" class="button__white">{{whiteButton}}</a>
+                <a href="{{whiteButtonLink}}" class="button__white" data-link>{{whiteButton}}</a>
                 <hr>
-                <a href="{{grayButtonLink}}" class="button__gray">{{grayButton}}</a>
+                <a href="{{grayButtonLink}}" class="button__gray" data-link>{{grayButton}}</a>
             </div>
         </form>
     </main>
 `;
 
-const authElement = document.getElementById("auth");
-const eventBus = new EventBus();
+export function RegisterView(): void {
+	const authElement = document.getElementById("app");
+	const eventBus = new EventBus();
 
-const template = Handlebars.compile(templateSource);
-const html = template(context);
+	const template = Handlebars.compile(templateSource);
+	const html = template(context);
 
-if (authElement) {
-	authElement.innerHTML = html;
+	if (authElement) {
+		authElement.innerHTML = html;
 
-	const inputWrapper = document.getElementById("input-wrapper");
+		const inputWrapper = document.getElementById("input-wrapper");
 
-	if (inputWrapper) {
-		context.fields.forEach((field) => {
-			const inputComponent = new Input(field, eventBus);
-			inputWrapper.appendChild(inputComponent.getElement());
+		if (inputWrapper) {
+			context.fields.forEach((field) => {
+				const inputComponent = new Input(field, eventBus);
+				inputWrapper.appendChild(inputComponent.getElement());
+			});
+		}
+
+		const form = authElement.querySelector("form") as HTMLFormElement;
+		if (form) {
+			attachValidationToForm(form);
+		}
+
+		eventBus.on("inputChange", (data: { name: string; value: string }) => {
+			console.log(`Поле ${data.name} изменено: ${data.value}`);
 		});
 	}
-
-	const form = authElement.querySelector("form") as HTMLFormElement;
-	if (form) {
-		attachValidationToForm(form);
-	}
-
-	eventBus.on("inputChange", (data: { name: string; value: string }) => {
-		console.log(`Поле ${data.name} изменено: ${data.value}`);
-	});
 }
