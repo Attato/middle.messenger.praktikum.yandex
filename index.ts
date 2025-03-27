@@ -30,8 +30,8 @@ const authData: Context = {
 	],
 	whiteButton: "Авторизоваться",
 	grayButton: "Нет аккаунта?",
-	whiteButtonLink: "/src/pages/chat/chat.html",
-	grayButtonLink: "/src/pages/auth/signup.html",
+	whiteButtonLink: "/chat",
+	grayButtonLink: "/register",
 };
 
 const templateSource = `
