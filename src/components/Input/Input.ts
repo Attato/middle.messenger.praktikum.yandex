@@ -1,6 +1,6 @@
-import { EventBus } from "./EventBus";
+import { EventBus } from "../EventBus";
+import { Block } from "../Block";
 import styles from "./Input.module.scss";
-import { Block } from "./Block";
 
 export interface InputProps {
 	label: string;
