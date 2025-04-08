@@ -9,7 +9,7 @@ export interface Chat {
 	name: string;
 	lastMessage: string;
 	lastMessageTime: string;
-	unreadCount: number | null;
+	unreadCount: number;
 	messages: Message[];
 }
 
