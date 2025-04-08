@@ -1,63 +1,79 @@
-type Route = {
-	path: string;
-	component: () => string;
+type PageModule = () => Promise<{ render: () => string | Promise<string> }>;
+
+const routes: Record<string, PageModule> = {
+	"/": () => import("pages/auth/signin"),
+	"/auth/signup": () => import("pages/auth/signup"),
+	"/chat": () => import("pages/chat/chat"),
+	"/profile": () => import("pages/profile/profile"),
+	"404": () => import("pages/error/404"),
+	"500": () => import("pages/error/500"),
 };
 
-class Router {
-	private routes: Route[];
-	private rootElement: HTMLElement;
+const checkAuthStatus = async (): Promise<boolean> => {
+	try {
+		const response = await fetch(
+			"https://ya-praktikum.tech/api/v2/auth/user",
+			{
+				method: "GET",
+				credentials: "include",
+			},
+		);
+		return response.ok;
+	} catch (err) {
+		console.error("Ошибка при проверке авторизации:", err);
+		return false;
+	}
+};
 
-	constructor(routes: Route[], rootElementId: string) {
-		this.routes = routes;
-		const element = document.getElementById(rootElementId);
-		if (!element) {
-			throw new Error(`Element with ID "${rootElementId}" not found`);
+export const route = (event: Event): void => {
+	event.preventDefault();
+
+	const target = event.target as HTMLAnchorElement;
+
+	if (target && target.href) {
+		window.history.pushState({}, "", target.href);
+
+		handleLocation();
+	}
+};
+
+export const handleLocation = async (): Promise<void> => {
+	const path: string = window.location.pathname;
+	const loader = routes[path] || routes["404"];
+	const mainPage = document.getElementById("main-page");
+
+	try {
+		if (path === "/" || path === "/auth/signup") {
+			const isAuthenticated = await checkAuthStatus();
+			if (isAuthenticated) {
+				window.location.href = "/chat";
+				return;
+			}
 		}
-		this.rootElement = element;
-		this._loadInitialRoute();
-		this._addPopStateListener();
-	}
 
-	private _loadInitialRoute(): void {
-		this.navigate(window.location.pathname, false);
-	}
-
-	navigate(path: string, addToHistory: boolean = true): void {
-		const route = this.routes.find((r) => r.path === path);
-		if (!route) {
-			this.rootElement.innerHTML = "<h1>404 - Страница не найдена</h1>";
-			return;
+		if (path === "/chat" || path === "/profile") {
+			const isAuthenticated = await checkAuthStatus();
+			if (!isAuthenticated) {
+				window.location.href = "/";
+				return;
+			}
 		}
 
-		if (addToHistory) {
-			window.history.pushState({}, "", path);
-		}
+		const page = await loader();
+		const content = await page.render();
+		if (mainPage) mainPage.innerHTML = content;
+	} catch (error) {
+		console.error("Error loading route module:", error);
 
-		this.rootElement.innerHTML = route.component();
-	}
-
-	private _addPopStateListener(): void {
-		window.addEventListener("popstate", () => {
-			this.navigate(window.location.pathname, false);
-		});
-	}
-}
-
-const routes: Route[] = [
-	{ path: "/", component: () => "<h1>Главная</h1>" },
-	{ path: "/about", component: () => "<h1>О нас</h1>" },
-	{ path: "/contact", component: () => "<h1>Контакты</h1>" },
-];
-
-const router = new Router(routes, "app");
-
-document.addEventListener("click", (event: Event) => {
-	const target = event.target as HTMLElement;
-	if (target.matches("[data-link]")) {
-		event.preventDefault();
-		const href = target.getAttribute("href");
-		if (href) {
-			router.navigate(href);
+		try {
+			const page500 = await routes["500"]();
+			const html500 = await page500.render();
+			if (mainPage) mainPage.innerHTML = html500;
+		} catch (nestedError) {
+			console.error("Error loading 500 page:", nestedError);
 		}
 	}
-});
+};
+
+window.addEventListener("popstate", handleLocation);
+window.addEventListener("DOMContentLoaded", handleLocation);
