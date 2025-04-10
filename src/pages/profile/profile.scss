@@ -1,0 +1,69 @@
+@use "../../../variables" as *;
+
+.container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 425px;
+	min-height: 100vh;
+	margin: auto;
+	padding-left: 16px;
+	padding-right: 16px;
+
+	.profile {
+		width: 100%;
+
+		.title-wrap {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			font-size: 17px;
+
+			a:hover {
+				text-decoration: underline;
+			}
+
+			h1 {
+				font-size: 17px;
+				font-weight: 400;
+
+				.profile__login {
+					color: $green-color;
+				}
+			}
+		}
+
+		.input__wrap {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			margin-top: 12px;
+		}
+
+		.button__wrap {
+			width: 100%;
+			display: flex;
+			margin-top: 12px;
+
+			button {
+				width: 100%;
+			}
+		}
+
+		hr {
+			margin-top: 12px;
+			border: 1px solid $border-color;
+			border-bottom-color: transparent;
+		}
+
+		.profile__action {
+			margin-top: 12px;
+
+			button {
+				background-color: $red-color;
+				border-color: #f44336;
+				width: 100%;
+			}
+		}
+	}
+}
