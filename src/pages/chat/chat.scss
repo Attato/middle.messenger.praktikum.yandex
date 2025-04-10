@@ -173,7 +173,7 @@
 		}
 
 		.chat-footer {
-			width: 768px;
+			max-width: 768px;
 			background: $background-color;
 			position: fixed;
 			padding-bottom: 16px;
