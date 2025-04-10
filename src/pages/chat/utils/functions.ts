@@ -188,7 +188,7 @@ export const loadMessagesForChat = async (): Promise<string> => {
 	}
 };
 
-export const addMessageToChat = (message: Message, chats: Chat[]): void => {
+const addMessageToChat = (message: Message, chats: Chat[]): void => {
 	console.log(message);
 
 	if (currentChatId !== null) {
