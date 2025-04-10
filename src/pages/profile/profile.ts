@@ -127,6 +127,17 @@ export const mount = async (): Promise<void> => {
 
 				if (response.ok) {
 					alert("Данные профиля обновлены");
+
+					for (const field of profileData.fields) {
+						const inputElement = document.querySelector(
+							`input[name=${field.name}]`,
+						) as HTMLInputElement | null;
+						if (inputElement) {
+							userData[field.name] = inputElement.value;
+						}
+					}
+
+					loginElement.textContent = userData.login || "";
 				} else {
 					const error = await response.json();
 					alert(`Ошибка: ${error.reason}`);
