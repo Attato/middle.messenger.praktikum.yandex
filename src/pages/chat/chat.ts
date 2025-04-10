@@ -101,101 +101,7 @@ const updateChatUsers = async (chatId: number): Promise<void> => {
 	}
 };
 
-export const render = (): string => {
-	const template = Handlebars.compile(templateSource);
-	return template({});
-};
-
-export const mount = async (): Promise<void> => {
-	const eventBus = new EventBus();
-	const chatList = document.getElementById("messenger__sidebar");
-	const chatArea = document.querySelector(".messenger__chat");
-
-	if (!chatList || !chatArea) return;
-
-	const renderChats = () => {
-		const chatItems = chatList.querySelectorAll(".chatLink");
-		chatItems.forEach((el) => el.remove());
-
-		chatsData.forEach((chat) => {
-			const chatItem = new ChatItem(chat, eventBus);
-			const element = chatItem.getElement();
-
-			const deleteButton = document.createElement("button");
-			deleteButton.textContent = "Удалить";
-			deleteButton.classList.add("delete-chat-button");
-
-			deleteButton.addEventListener("click", async () => {
-				if (confirm("Вы уверены, что хотите удалить этот чат?")) {
-					console.log("Удаление чата с ID:", chat.id);
-					try {
-						await deleteChat(chat.id);
-						chatsData = await fetchChats();
-						renderChats();
-
-						if (currentChatId === chat.id) {
-							currentChatId = null;
-							const chatArea =
-								document.querySelector(".messenger__chat");
-							if (chatArea) {
-								chatArea.innerHTML = `<div class="messenger__placeholder">Выберите, кому хотели бы написать</div>`;
-							}
-						}
-					} catch (err) {
-						console.error("Ошибка при удалении чата:", err);
-					}
-				}
-			});
-
-			element.appendChild(deleteButton);
-
-			element.addEventListener("click", () => {
-				loadChatContent(chat.id, chatsData);
-			});
-			chatList.appendChild(element);
-		});
-	};
-
-	try {
-		chatsData = await fetchChats();
-		renderChats();
-	} catch (err) {
-		console.error("Ошибка загрузки чатов:", err);
-		chatList.innerHTML += `<p class="error">Не удалось загрузить чаты</p>`;
-	}
-
-	if (chatArea) {
-		chatArea.innerHTML = `<div class="messenger__placeholder">Выберите, кому хотели бы написать</div>`;
-	}
-
-	const createChatForm = document.getElementById(
-		"create-chat-form",
-	) as HTMLFormElement;
-	const newChatTitleInput = document.getElementById(
-		"new-chat-title",
-	) as HTMLInputElement;
-
-	createChatForm?.addEventListener("submit", async (event) => {
-		event.preventDefault();
-		const title = newChatTitleInput.value.trim();
-		if (!title) return;
-
-		try {
-			await createChat(title);
-
-			chatsData = await fetchChats();
-
-			renderChats();
-
-			newChatTitleInput.value = "";
-		} catch (err) {
-			console.error("Ошибка при создании чата:", err);
-			alert("Не удалось создать чат");
-		}
-	});
-};
-
-export const loadChatContent = (chatId: number, chats: Chat[]): void => {
+const loadChatContent = (chatId: number, chats: Chat[]): void => {
 	currentChatId = chatId;
 
 	const selectedChat = chatsData.find((chat) => chat.id === chatId);
@@ -298,7 +204,7 @@ export const loadChatContent = (chatId: number, chats: Chat[]): void => {
 	}
 };
 
-export const sendMessage = async (chats: Chat[]): Promise<void> => {
+const sendMessage = async (chats: Chat[]): Promise<void> => {
 	const messageInput = document.getElementById("message") as HTMLInputElement;
 	const messageContent = messageInput.value.trim();
 
@@ -364,6 +270,100 @@ const addMessageToChat = (message: Message, chats: Chat[]): void => {
 			noMessagesInfo.remove();
 		}
 	}
+};
+
+export const render = (): string => {
+	const template = Handlebars.compile(templateSource);
+	return template({});
+};
+
+export const mount = async (): Promise<void> => {
+	const eventBus = new EventBus();
+	const chatList = document.getElementById("messenger__sidebar");
+	const chatArea = document.querySelector(".messenger__chat");
+
+	if (!chatList || !chatArea) return;
+
+	const renderChats = () => {
+		const chatItems = chatList.querySelectorAll(".chatLink");
+		chatItems.forEach((el) => el.remove());
+
+		chatsData.forEach((chat) => {
+			const chatItem = new ChatItem(chat, eventBus);
+			const element = chatItem.getElement();
+
+			const deleteButton = document.createElement("button");
+			deleteButton.textContent = "Удалить";
+			deleteButton.classList.add("delete-chat-button");
+
+			deleteButton.addEventListener("click", async () => {
+				if (confirm("Вы уверены, что хотите удалить этот чат?")) {
+					console.log("Удаление чата с ID:", chat.id);
+					try {
+						await deleteChat(chat.id);
+						chatsData = await fetchChats();
+						renderChats();
+
+						if (currentChatId === chat.id) {
+							currentChatId = null;
+							const chatArea =
+								document.querySelector(".messenger__chat");
+							if (chatArea) {
+								chatArea.innerHTML = `<div class="messenger__placeholder">Выберите, кому хотели бы написать</div>`;
+							}
+						}
+					} catch (err) {
+						console.error("Ошибка при удалении чата:", err);
+					}
+				}
+			});
+
+			element.appendChild(deleteButton);
+
+			element.addEventListener("click", () => {
+				loadChatContent(chat.id, chatsData);
+			});
+			chatList.appendChild(element);
+		});
+	};
+
+	try {
+		chatsData = await fetchChats();
+		renderChats();
+	} catch (err) {
+		console.error("Ошибка загрузки чатов:", err);
+		chatList.innerHTML += `<p class="error">Не удалось загрузить чаты</p>`;
+	}
+
+	if (chatArea) {
+		chatArea.innerHTML = `<div class="messenger__placeholder">Выберите, кому хотели бы написать</div>`;
+	}
+
+	const createChatForm = document.getElementById(
+		"create-chat-form",
+	) as HTMLFormElement;
+	const newChatTitleInput = document.getElementById(
+		"new-chat-title",
+	) as HTMLInputElement;
+
+	createChatForm?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		const title = newChatTitleInput.value.trim();
+		if (!title) return;
+
+		try {
+			await createChat(title);
+
+			chatsData = await fetchChats();
+
+			renderChats();
+
+			newChatTitleInput.value = "";
+		} catch (err) {
+			console.error("Ошибка при создании чата:", err);
+			alert("Не удалось создать чат");
+		}
+	});
 };
 
 if (document.readyState === "loading") {
