@@ -163,6 +163,12 @@
 				justify-content: center;
 				height: 100%;
 				align-items: center;
+
+				p {
+					background-color: $background-color-light;
+					padding: 4px 8px;
+					border-radius: 6px;
+				}
 			}
 		}
 
