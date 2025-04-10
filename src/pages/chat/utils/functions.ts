@@ -90,13 +90,13 @@ export const loadChatContent = async (
 
 		messageForm?.addEventListener("submit", (event) => {
 			event.preventDefault();
-			sendMessageToChatHandler(chats);
+			handleSendMessage(chats, messageInput.value);
 		});
 
 		messageInput?.addEventListener("keydown", (event) => {
 			if (event.key === "Enter" && !event.shiftKey) {
 				event.preventDefault();
-				sendMessageToChatHandler(chats);
+				handleSendMessage(chats, messageInput.value);
 			}
 		});
 
@@ -188,66 +188,18 @@ export const loadMessagesForChat = async (): Promise<string> => {
 	}
 };
 
-const addMessageToChat = (message: Message, chats: Chat[]): void => {
-	console.log(message);
-
-	if (currentChatId !== null) {
-		const selectedChat = chats.find((chat) => chat.id === currentChatId);
-
-		if (!selectedChat) {
-			console.error("Чат с таким ID не найден:", currentChatId);
-			return;
-		}
-
-		if (!selectedChat.messages) {
-			selectedChat.messages = [];
-		}
-
-		selectedChat.messages.push(message);
-
-		saveMessagesLocally(currentChatId, selectedChat.messages);
-
-		const chatMessagesContainer = document.querySelector(".chat-messages");
-
-		selectedChat.lastMessage = message.content;
-		selectedChat.lastMessageTime = message.time;
-
-		if (chatMessagesContainer) {
-			const newMessageHtml = `
-        <div class="message message--${message.type}">
-          <div class="message__sender">
-            <span class="message__sender-login">${message.userLogin}</span> 
-            <span class="message__sender-id">(ID: ${message.userId})</span>
-          </div>
-
-          <div class="message__content">
-            <p>${message.content}</p>
-            <span class="message__time">${message.time}</span>
-          </div>
-        </div>`;
-			chatMessagesContainer.innerHTML += newMessageHtml;
-
-			chatMessagesContainer.scrollTop =
-				chatMessagesContainer.scrollHeight;
-		}
-
-		const noMessagesInfo = document.querySelector(".no-messages-info");
-		if (noMessagesInfo) {
-			noMessagesInfo.remove();
-		}
-	}
-};
-
-export const sendMessageToChatHandler = async (
+export const handleSendMessage = async (
 	chats: Chat[],
+	messageContent: string,
 ): Promise<void> => {
 	const messageInput = document.getElementById("message") as HTMLInputElement;
-	const messageContent = messageInput.value.trim();
 
-	if (messageContent && currentChatId !== null) {
+	const messageContentFinal = messageContent.trim();
+
+	if (messageContentFinal && currentChatId !== null) {
 		const currentUser = await fetchCurrentUser();
 		const newMessage: Message = {
-			content: messageContent,
+			content: messageContentFinal,
 			time: new Date().toLocaleTimeString([], {
 				hour: "2-digit",
 				minute: "2-digit",
@@ -257,10 +209,65 @@ export const sendMessageToChatHandler = async (
 			userLogin: currentUser.login,
 		};
 
-		addMessageToChat(newMessage, chats);
-		messageInput.value = "";
+		const addMessageToChat = (message: Message, chats: Chat[]): void => {
+			console.log(message);
 
-		sendMessage(messageContent);
+			if (currentChatId !== null) {
+				const selectedChat = chats.find(
+					(chat) => chat.id === currentChatId,
+				);
+
+				if (!selectedChat) {
+					console.error("Чат с таким ID не найден:", currentChatId);
+					return;
+				}
+
+				if (!selectedChat.messages) {
+					selectedChat.messages = [];
+				}
+
+				selectedChat.messages.push(message);
+
+				saveMessagesLocally(currentChatId, selectedChat.messages);
+
+				const chatMessagesContainer =
+					document.querySelector(".chat-messages");
+
+				selectedChat.lastMessage = message.content;
+				selectedChat.lastMessageTime = message.time;
+
+				if (chatMessagesContainer) {
+					const newMessageHtml = `
+            <div class="message message--${message.type}">
+              <div class="message__sender">
+                <span class="message__sender-login">${message.userLogin}</span> 
+                <span class="message__sender-id">(ID: ${message.userId})</span>
+              </div>
+
+              <div class="message__content">
+                <p>${message.content}</p>
+                <span class="message__time">${message.time}</span>
+              </div>
+            </div>`;
+					chatMessagesContainer.innerHTML += newMessageHtml;
+
+					chatMessagesContainer.scrollTop =
+						chatMessagesContainer.scrollHeight;
+				}
+
+				const noMessagesInfo =
+					document.querySelector(".no-messages-info");
+				if (noMessagesInfo) {
+					noMessagesInfo.remove();
+				}
+			}
+		};
+
+		addMessageToChat(newMessage, chats);
+
+		sendMessage(messageContentFinal);
+
+		messageInput.value = "";
 
 		const messengerChat = document.querySelector(".messenger__chat");
 		if (messengerChat) {
