@@ -2,39 +2,36 @@ import Handlebars from "handlebars";
 import { EventBus } from "../../components/EventBus";
 import { Chat, Message } from "pages/chat/utils/interfaces";
 import { ChatItem } from "../../components/ChatItem/ChatItem";
+
+import {
+	fetchChats,
+	createChat,
+	deleteChat,
+	addUserToChat,
+	removeUserFromChat,
+	checkUserExists,
+	getChatUsers,
+	fetchCurrentUser,
+} from "pages/chat/utils/api";
+
 import "pages/chat/chat.scss";
 
 export let currentChatId: number | null = null;
-
-export const chatsData: Chat[] = [
-	{
-		avatar: "?",
-		name: "Андрей",
-		lastMessage: "Изображение",
-		lastMessageTime: "10:49",
-		unreadCount: 2,
-		messages: [
-			{ content: "Привет!", time: "10:30", type: "received" },
-			{ content: "Привет", time: "10:31", type: "sent" },
-		],
-	},
-	{
-		avatar: "!",
-		name: "Илья",
-		lastMessage: "Друзья, у меня для вас особенный выпуск новостей!",
-		lastMessageTime: "15:12",
-		unreadCount: 4,
-		messages: [
-			{ content: "Привет!", time: "12:49", type: "received" },
-			{ content: "Как дела?", time: "12:49", type: "received" },
-		],
-	},
-];
+export let chatsData: Chat[] = [];
 
 const templateSource = `
 <div class="messenger">
 	<div class="messenger__sidebar" id="messenger__sidebar">
 		<a href="/profile">Профиль</a>
+		<form id="create-chat-form" class="create-chat-form">
+			<input 
+				type="text" 
+				id="new-chat-title" 
+				placeholder="Новый чат..." 
+				required 
+			/>
+			<button type="submit">+</button>
+		</form>
 	</div>
 	<div class="messenger__chat"></div>
 </div>
@@ -42,9 +39,18 @@ const templateSource = `
 
 const getChatTemplate = (selectedChat: Chat, messagesHtml: string): string => `
     <header class="chat-header">
-        <h2>${selectedChat.name}</h2>
-        <span>был(а) недавно</span>
+        <h2>${selectedChat.title} (ID: ${selectedChat.id})</h2>
+
+		<form id="chat-users-form" class="chat-users-form">
+			<div class="chat-users" id="chat-users-list"></div>
+	
+			<input type="number" id="user-id-input" placeholder="ID пользователя" required />
+			<button type="submit" id="add-user-button">Добавить</button>
+			<button type="button" id="remove-user-button">Удалить</button>
+		</form>
     </header>
+
+
     <div class="chat-messages">
         ${messagesHtml}
     </div>
@@ -67,54 +73,174 @@ const getChatTemplate = (selectedChat: Chat, messagesHtml: string): string => `
     </footer>
 `;
 
+const updateChatUsers = async (chatId: number): Promise<void> => {
+	const usersListContainer = document.getElementById("chat-users-list");
+	if (!usersListContainer) return;
+
+	try {
+		const users = await getChatUsers(chatId);
+
+		const currentUser = await fetchCurrentUser();
+		const currentUserId = currentUser.id;
+
+		usersListContainer.innerHTML = `
+			<h4>Участники чата:</h4>
+			<ul>
+				${users
+					.map(
+						(user) =>
+							`<li>${user.login} (ID: ${user.id})${user.id === currentUserId ? " (Вы)" : ""}</li>`,
+					)
+					.join("")}
+			</ul>
+		`;
+	} catch (err) {
+		console.error("Ошибка загрузки участников:", err);
+		usersListContainer.innerHTML =
+			"<p class='error'>Не удалось загрузить участников</p>";
+	}
+};
+
 export const render = (): string => {
 	const template = Handlebars.compile(templateSource);
 	return template({});
 };
 
-export const mount = (): void => {
+export const mount = async (): Promise<void> => {
 	const eventBus = new EventBus();
 	const chatList = document.getElementById("messenger__sidebar");
+	const chatArea = document.querySelector(".messenger__chat");
 
-	if (chatList) {
-		chatsData.forEach((chat, index) => {
+	if (!chatList || !chatArea) return;
+
+	const renderChats = () => {
+		const chatItems = chatList.querySelectorAll(".chatLink");
+		chatItems.forEach((el) => el.remove());
+
+		chatsData.forEach((chat) => {
 			const chatItem = new ChatItem(chat, eventBus);
 			const element = chatItem.getElement();
+
+			const deleteButton = document.createElement("button");
+			deleteButton.textContent = "Удалить";
+			deleteButton.classList.add("delete-chat-button");
+
+			deleteButton.addEventListener("click", async () => {
+				if (confirm("Вы уверены, что хотите удалить этот чат?")) {
+					console.log("Удаление чата с ID:", chat.id);
+					try {
+						await deleteChat(chat.id);
+						chatsData = await fetchChats();
+						renderChats();
+
+						if (currentChatId === chat.id) {
+							currentChatId = null;
+							const chatArea =
+								document.querySelector(".messenger__chat");
+							if (chatArea) {
+								chatArea.innerHTML = `<div class="messenger__placeholder">Выберите, кому хотели бы написать</div>`;
+							}
+						}
+					} catch (err) {
+						console.error("Ошибка при удалении чата:", err);
+					}
+				}
+			});
+
+			element.appendChild(deleteButton);
+
 			element.addEventListener("click", () => {
-				loadChatContent(index, chatsData);
+				loadChatContent(chat.id, chatsData);
 			});
 			chatList.appendChild(element);
 		});
+	};
+
+	try {
+		chatsData = await fetchChats();
+		renderChats();
+	} catch (err) {
+		console.error("Ошибка загрузки чатов:", err);
+		chatList.innerHTML += `<p class="error">Не удалось загрузить чаты</p>`;
 	}
 
-	const chatArea = document.querySelector(".messenger__chat");
 	if (chatArea) {
 		chatArea.innerHTML = `<div class="messenger__placeholder">Выберите, кому хотели бы написать</div>`;
 	}
+
+	const createChatForm = document.getElementById(
+		"create-chat-form",
+	) as HTMLFormElement;
+	const newChatTitleInput = document.getElementById(
+		"new-chat-title",
+	) as HTMLInputElement;
+
+	createChatForm?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		const title = newChatTitleInput.value.trim();
+		if (!title) return;
+
+		try {
+			await createChat(title);
+
+			chatsData = await fetchChats();
+
+			renderChats();
+
+			newChatTitleInput.value = "";
+		} catch (err) {
+			console.error("Ошибка при создании чата:", err);
+			alert("Не удалось создать чат");
+		}
+	});
 };
 
 export const loadChatContent = (chatId: number, chats: Chat[]): void => {
 	currentChatId = chatId;
-	const selectedChat = chats[chatId];
+
+	const selectedChat = chatsData.find((chat) => chat.id === chatId);
+
+	if (!selectedChat) {
+		console.error("Чат не найден по ID:", chatId);
+		return;
+	}
+
 	const chatContent = document.querySelector(".messenger__chat");
 
 	if (chatContent) {
-		const messagesHtml = selectedChat.messages
-			.map(
-				(message) => `
-				<div class="message message--${message.type}">
-					<p>${message.content}</p>
-					<span class="message__time">${message.time}</span>
-				</div>`,
-			)
-			.join("");
+		const hasMessages =
+			selectedChat.messages && selectedChat.messages.length > 0;
+
+		const messagesHtml = hasMessages
+			? selectedChat.messages
+					.map(
+						(message) => `
+                <div class="message message--${message.type}">
+                    <p>${message.content}</p>
+                    <span class="message__time">${message.time}</span>
+                </div>`,
+					)
+					.join("")
+			: `<div class="no-messages-info"><p>Сообщений пока нет</p></div>`;
 
 		chatContent.innerHTML = getChatTemplate(selectedChat, messagesHtml);
+
+		updateChatUsers(selectedChat.id);
 
 		const messageForm = document.getElementById("message-form");
 		const messageInput = document.getElementById(
 			"message",
 		) as HTMLInputElement;
+
+		const userIdInput = document.getElementById(
+			"user-id-input",
+		) as HTMLInputElement;
+		const addUserBtn = document.getElementById(
+			"add-user-button",
+		) as HTMLButtonElement;
+		const removeUserBtn = document.getElementById(
+			"remove-user-button",
+		) as HTMLButtonElement;
 
 		messageForm?.addEventListener("submit", (event) => {
 			event.preventDefault();
@@ -127,14 +253,57 @@ export const loadChatContent = (chatId: number, chats: Chat[]): void => {
 				sendMessage(chats);
 			}
 		});
+
+		addUserBtn?.addEventListener("click", async (e) => {
+			e.preventDefault();
+			if (!userIdInput.value || currentChatId === null) return;
+
+			const userId = Number(userIdInput.value);
+			const chatId = selectedChat.id;
+
+			try {
+				const exists = await checkUserExists(userId);
+				if (!exists) {
+					alert("Пользователь с таким ID не найден");
+					return;
+				}
+				await addUserToChat(userId, chatId);
+				alert("Пользователь добавлен в чат");
+				userIdInput.value = "";
+
+				await updateChatUsers(chatId);
+			} catch (err) {
+				console.error(err);
+				alert("Ошибка при добавлении пользователя");
+			}
+		});
+
+		removeUserBtn?.addEventListener("click", async () => {
+			if (!userIdInput.value || currentChatId === null) return;
+
+			const userId = Number(userIdInput.value);
+			const chatId = selectedChat.id;
+
+			try {
+				await removeUserFromChat(userId, chatId);
+				alert("Пользователь удалён из чата");
+				userIdInput.value = "";
+
+				await updateChatUsers(chatId);
+			} catch (err) {
+				console.error(err);
+				alert("Не удалось удалить пользователя");
+			}
+		});
 	}
 };
 
-export const sendMessage = (chats: Chat[]): void => {
+export const sendMessage = async (chats: Chat[]): Promise<void> => {
 	const messageInput = document.getElementById("message") as HTMLInputElement;
 	const messageContent = messageInput.value.trim();
 
 	if (messageContent && currentChatId !== null) {
+		const currentUser = await fetchCurrentUser();
 		const newMessage: Message = {
 			content: messageContent,
 			time: new Date().toLocaleTimeString([], {
@@ -142,6 +311,8 @@ export const sendMessage = (chats: Chat[]): void => {
 				minute: "2-digit",
 			}),
 			type: "sent",
+			userId: currentUser.id,
+			userLogin: currentUser.login,
 		};
 
 		addMessageToChat(newMessage, chats);
@@ -157,20 +328,40 @@ export const sendMessage = (chats: Chat[]): void => {
 
 const addMessageToChat = (message: Message, chats: Chat[]): void => {
 	if (currentChatId !== null) {
-		const selectedChat = chats[currentChatId];
+		const selectedChat = chats.find((chat) => chat.id === currentChatId);
+
+		if (!selectedChat) {
+			console.error("Чат с таким ID не найден:", currentChatId);
+			return;
+		}
+
 		const chatMessagesContainer = document.querySelector(".chat-messages");
 
-		selectedChat.messages.push(message);
 		selectedChat.lastMessage = message.content;
 		selectedChat.lastMessageTime = message.time;
 
 		if (chatMessagesContainer) {
 			const newMessageHtml = `
-				<div class="message message--${message.type}">
-					<p>${message.content}</p>
-					<span class="message__time">${message.time}</span>
-				</div>`;
+                <div class="message message--${message.type}">
+                    <div class="message__sender">
+                        <span class="message__sender-login">${message.userLogin}</span> 
+                        <span class="message__sender-id">(ID: ${message.userId})</span>
+                    </div>
+
+					<div class="message__content">
+						<p>${message.content}</p>
+						<span class="message__time">${message.time}</span>
+					</div>
+                </div>`;
 			chatMessagesContainer.innerHTML += newMessageHtml;
+
+			chatMessagesContainer.scrollTop =
+				chatMessagesContainer.scrollHeight;
+		}
+
+		const noMessagesInfo = document.querySelector(".no-messages-info");
+		if (noMessagesInfo) {
+			noMessagesInfo.remove();
 		}
 	}
 };
