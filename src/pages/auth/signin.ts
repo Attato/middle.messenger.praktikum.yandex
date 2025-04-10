@@ -11,7 +11,7 @@ const authData = {
 			label: "Логин",
 			type: "text",
 			name: "login",
-			placeholder: "",
+			placeholder: "krutoi",
 			autocomplete: "on",
 		},
 		{
