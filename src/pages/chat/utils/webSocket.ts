@@ -1,5 +1,5 @@
 import { getChatToken, fetchCurrentUser } from "pages/chat/utils/api";
-import { addMessageToChat } from "./functions";
+import { sendMessageToChatHandler } from "pages/chat/utils/functions";
 import { chatsData, currentChatId } from "../chat";
 import { saveMessagesLocally } from "./storage";
 
@@ -34,7 +34,7 @@ export const connectToChat = async (chatId: number) => {
 				const messageData = JSON.parse(event.data);
 
 				if (messageData.type === "message") {
-					addMessageToChat(messageData, chatsData);
+					sendMessageToChatHandler(chatsData);
 
 					saveMessagesLocally(
 						currentChatId!,
