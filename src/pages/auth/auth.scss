@@ -32,10 +32,23 @@
 				margin-top: 18px;
 			}
 
-			.input__wrap {
-				display: flex;
-				flex-direction: column;
-				gap: 8px;
+			#auth-form {
+				.input__wrap {
+					display: flex;
+					flex-direction: column;
+					gap: 8px;
+				}
+
+				.button__white {
+					width: 100%;
+					background-color: $white-color;
+					margin-top: 8px;
+					color: $dark-gray-color;
+
+					&:hover {
+						background-color: $white-color-hover;
+					}
+				}
 			}
 
 			.auth__actions {
@@ -52,15 +65,6 @@
 					padding: 10px;
 					border-radius: 6px;
 					transition: all 0.3s;
-				}
-
-				.button__white {
-					background-color: $white-color;
-					margin-top: 8px;
-
-					&:hover {
-						background-color: $white-color-hover;
-					}
 				}
 
 				hr {
