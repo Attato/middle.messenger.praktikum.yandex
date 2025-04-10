@@ -5,8 +5,9 @@ export interface Profile {
 }
 
 export interface Chat {
-	avatar: string;
-	name: string;
+	id: number;
+	avatar: string | null;
+	title: string;
 	lastMessage: string;
 	lastMessageTime: string;
 	unreadCount: number;
@@ -14,6 +15,8 @@ export interface Chat {
 }
 
 export interface Message {
+	userId: number;
+	userLogin: string;
 	content: string;
 	time: string;
 	type: "sent" | "received";
