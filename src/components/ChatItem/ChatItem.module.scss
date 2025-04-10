@@ -6,10 +6,15 @@
 	gap: 12px;
 	padding: 12px 16px;
 	border-top: 1px solid $border-color;
+	transition: all 0.3s;
 
 	&:hover {
 		background-color: $gray-background;
 		cursor: pointer;
+
+		button:hover {
+			background-color: $gray-background-hover;
+		}
 	}
 
 	&:last-child {
@@ -42,6 +47,7 @@
 			h2 {
 				font-size: 16px;
 				font-weight: 400;
+				text-transform: capitalize;
 			}
 
 			p {
