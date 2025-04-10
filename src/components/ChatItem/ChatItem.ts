@@ -19,10 +19,6 @@ export class ChatItem extends Block<ChatItemProps> {
 		container.classList.add("chatLink");
 		container.classList.add(styles.chatLink);
 
-		const avatar = document.createElement("div");
-		avatar.classList.add(styles.chatLink__avatar);
-		avatar.textContent = this.props.avatar;
-
 		const main = document.createElement("div");
 		main.classList.add(styles.chatLink__main);
 
@@ -55,7 +51,6 @@ export class ChatItem extends Block<ChatItemProps> {
 		main.appendChild(header);
 		main.appendChild(data);
 
-		container.appendChild(avatar);
 		container.appendChild(main);
 
 		if (this.props.events) {
