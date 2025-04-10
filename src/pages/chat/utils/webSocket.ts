@@ -1,7 +1,5 @@
 import { getChatToken, fetchCurrentUser } from "pages/chat/utils/api";
-import { handleSendMessage } from "pages/chat/utils/functions";
-import { chatsData, currentChatId } from "../chat";
-import { saveMessagesLocally } from "./storage";
+import { handleIncomingMessage } from "pages/chat/utils/functions";
 
 let socket: WebSocket | null = null;
 
@@ -33,14 +31,10 @@ export const connectToChat = async (chatId: number) => {
 			try {
 				const messageData = JSON.parse(event.data);
 
-				if (messageData.type === "message") {
-					handleSendMessage(chatsData, messageData);
+				console.log("Получено сообщение по WebSocket:", messageData);
 
-					saveMessagesLocally(
-						currentChatId!,
-						chatsData.find((chat) => chat.id === currentChatId)
-							?.messages || [],
-					);
+				if (messageData.type === "message") {
+					handleIncomingMessage(messageData);
 				}
 			} catch (error) {
 				console.error("Ошибка при обработке сообщения:", error);

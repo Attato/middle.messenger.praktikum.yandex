@@ -188,7 +188,7 @@ export const loadMessagesForChat = async (): Promise<string> => {
 	}
 };
 
-export const handleSendMessage = async (
+const handleSendMessage = async (
 	chats: Chat[],
 	messageContent: string,
 ): Promise<void> => {
@@ -275,4 +275,47 @@ export const handleSendMessage = async (
 		}
 		messageInput.focus();
 	}
+};
+
+export const handleIncomingMessage = async (
+	messageData: Message,
+): Promise<void> => {
+	if (currentChatId === null) return;
+
+	const currentUser = await fetchCurrentUser();
+
+	const message: Message = {
+		...messageData,
+		type: messageData.userId === currentUser.id ? "sent" : "received",
+	};
+
+	const selectedChat = chatsData.find((chat) => chat.id === currentChatId);
+	if (!selectedChat) return;
+
+	if (!selectedChat.messages) {
+		selectedChat.messages = [];
+	}
+
+	selectedChat.messages.push(message);
+	saveMessagesLocally(currentChatId, selectedChat.messages);
+
+	const chatMessagesContainer = document.querySelector(".chat-messages");
+	if (chatMessagesContainer) {
+		const newMessageHtml = `
+      <div class="message message--${message.type}">
+        <div class="message__sender">
+          <span class="message__sender-login">${message.userLogin}</span> 
+          <span class="message__sender-id">(ID: ${message.userId})</span>
+        </div>
+        <div class="message__content">
+          <p>${message.content}</p>
+          <span class="message__time">${message.time}</span>
+        </div>
+      </div>`;
+		chatMessagesContainer.innerHTML += newMessageHtml;
+		chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+	}
+
+	const noMessagesInfo = document.querySelector(".no-messages-info");
+	if (noMessagesInfo) noMessagesInfo.remove();
 };
