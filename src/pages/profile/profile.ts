@@ -28,41 +28,39 @@ const profileData = {
 			placeholder: "+7 (999) 123-45-67",
 		},
 	],
-	whiteButton: "Сохранить изменения",
-	grayButton: "Выйти из аккаунта",
 };
 
 const templateSource = `
 <div class="container">
-	<div class="profile">
-		<header class="title-wrap">
-			<a href="/chat">Вернуться к чатам</a>
-			<h1>
-				{{title}} 
-				<span class="profile__login">{{login}}</span>
-			</h1>	
-		</header>
+  <div class="profile">
+    <header class="title-wrap">
+      <a href="/chat">Вернуться к чатам</a>
+      <h1>
+        Профиль:
+        <span class="profile__login">{{login}}</span>
+      </h1>  
+    </header>
 
-		<form id="profile-form">
-			<div class="input__wrap" id="input-wrapper"></div>
-			
-			<div class="button__wrap">
-				<button type="submit" class="button__white">{{whiteButton}}</button>
-			</div>
-		</form>
+    <form id="profile-form">
+      <div class="input__wrap" id="input-wrapper"></div>
+      
+      <div class="button__wrap">
+        <button type="submit" class="button__white">Сохранить изменения</button>
+      </div>
+    </form>
 
-		<hr />
+    <hr />
 
-		<div class="profile__action">
-			<button id="logout-btn">{{grayButton}}</button>
-		</div>
-	</div>
+    <div class="profile__action">
+      <button id="logout-btn">Выйти из профиля</button>
+    </div>
+  </div>
 </div>
 `;
 
-export const render = (profileData: Record<string, any>): string => {
+export const render = (): string => {
 	const template = Handlebars.compile(templateSource);
-	return template(profileData);
+	return template({});
 };
 
 export const mount = async (): Promise<void> => {
@@ -75,15 +73,17 @@ export const mount = async (): Promise<void> => {
 		return;
 	}
 
-	// Теперь мы устанавливаем title в объект profileData
-	const profileDataWithUser = {
-		...profileData,
-		title: `Профиль:`,
-		login: userData.login,
-	};
+	document.body.innerHTML = render();
 
-	// Рендерим шаблон с обновленными данными
-	document.body.innerHTML = render(profileDataWithUser);
+	const loginElement = document.createElement("span");
+	loginElement.classList.add("profile__login");
+	loginElement.textContent = userData.login || "";
+
+	const h1Element = document.querySelector(".profile h1");
+
+	if (h1Element) {
+		h1Element.appendChild(loginElement);
+	}
 
 	const eventBus = new EventBus();
 	const inputWrapper = document.getElementById("input-wrapper");
