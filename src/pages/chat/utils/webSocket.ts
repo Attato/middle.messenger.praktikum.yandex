@@ -1,4 +1,7 @@
 import { getChatToken, fetchCurrentUser } from "pages/chat/utils/api";
+import { addMessageToChat } from "./functions";
+import { chatsData, currentChatId } from "../chat";
+import { saveMessagesLocally } from "./storage";
 
 let socket: WebSocket | null = null;
 
@@ -24,6 +27,24 @@ export const connectToChat = async (chatId: number) => {
 
 		socket.addEventListener("error", (error) => {
 			console.error("WebSocket ошибка:", error);
+		});
+
+		socket.addEventListener("message", (event) => {
+			try {
+				const messageData = JSON.parse(event.data);
+
+				if (messageData.type === "message") {
+					addMessageToChat(messageData, chatsData);
+
+					saveMessagesLocally(
+						currentChatId!,
+						chatsData.find((chat) => chat.id === currentChatId)
+							?.messages || [],
+					);
+				}
+			} catch (error) {
+				console.error("Ошибка при обработке сообщения:", error);
+			}
 		});
 	} catch (err) {
 		console.error("Не удалось подключиться к чату:", err);
