@@ -1,13 +1,11 @@
 import { EventBus } from "../EventBus";
 import { Block } from "../Block";
+
+import { Chat } from "pages/chat/utils/interfaces";
+
 import styles from "./ChatItem.module.scss";
 
-interface ChatItemProps {
-	avatar: string;
-	name: string;
-	lastMessage: string;
-	lastMessageTime: string;
-	unreadCount: number | null;
+interface ChatItemProps extends Chat {
 	events?: Record<string, (event: Event) => void>;
 }
 
@@ -18,6 +16,7 @@ export class ChatItem extends Block<ChatItemProps> {
 
 	protected createElement(): HTMLElement {
 		const container = document.createElement("div");
+		container.classList.add("chatLink");
 		container.classList.add(styles.chatLink);
 
 		const avatar = document.createElement("div");
@@ -30,13 +29,13 @@ export class ChatItem extends Block<ChatItemProps> {
 		const header = document.createElement("div");
 		header.classList.add(styles.chatLink__header);
 
-		const name = document.createElement("h2");
-		name.textContent = this.props.name;
+		const title = document.createElement("h2");
+		title.textContent = this.props.title;
 
 		const message = document.createElement("p");
 		message.textContent = this.props.lastMessage;
 
-		header.appendChild(name);
+		header.appendChild(title);
 		header.appendChild(message);
 
 		const data = document.createElement("div");
