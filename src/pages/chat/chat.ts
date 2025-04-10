@@ -14,6 +14,7 @@ import {
 	fetchCurrentUser,
 } from "pages/chat/utils/api";
 
+import { connectToChat, sendMessage } from "./utils/webSocket";
 import "pages/chat/chat.scss";
 
 export let currentChatId: number | null = null;
@@ -43,10 +44,15 @@ const getChatTemplate = (selectedChat: Chat, messagesHtml: string): string => `
 
 		<form id="chat-users-form" class="chat-users-form">
 			<div class="chat-users" id="chat-users-list"></div>
-	
-			<input type="number" id="user-id-input" placeholder="ID пользователя" required />
-			<button type="submit" id="add-user-button">Добавить</button>
-			<button type="button" id="remove-user-button">Удалить</button>
+
+			<div class="user-management">
+				<input type="number" id="user-id-input" placeholder="ID пользователя" required />
+
+				<div class="buttons">
+					<button type="submit" id="add-user-button">Добавить</button>
+					<button type="button" id="remove-user-button">Удалить</button>
+				</div>
+			</div>
 		</form>
     </header>
 
@@ -77,6 +83,8 @@ const updateChatUsers = async (chatId: number): Promise<void> => {
 	const usersListContainer = document.getElementById("chat-users-list");
 	if (!usersListContainer) return;
 
+	usersListContainer.innerHTML = `<div class="loader">Загрузка участников...</div>`;
+
 	try {
 		const users = await getChatUsers(chatId);
 
@@ -84,16 +92,16 @@ const updateChatUsers = async (chatId: number): Promise<void> => {
 		const currentUserId = currentUser.id;
 
 		usersListContainer.innerHTML = `
-			<h4>Участники чата:</h4>
-			<ul>
-				${users
-					.map(
-						(user) =>
-							`<li>${user.login} (ID: ${user.id})${user.id === currentUserId ? " (Вы)" : ""}</li>`,
-					)
-					.join("")}
-			</ul>
-		`;
+      <h4>Участники чата:</h4>
+      <ul>
+        ${users
+			.map(
+				(user) =>
+					`<li>${user.login} (ID: ${user.id})${user.id === currentUserId ? " (Вы)" : ""}</li>`,
+			)
+			.join("")}
+      </ul>
+    `;
 	} catch (err) {
 		console.error("Ошибка загрузки участников:", err);
 		usersListContainer.innerHTML =
@@ -101,7 +109,10 @@ const updateChatUsers = async (chatId: number): Promise<void> => {
 	}
 };
 
-const loadChatContent = (chatId: number, chats: Chat[]): void => {
+const loadChatContent = async (
+	chatId: number,
+	chats: Chat[],
+): Promise<void> => {
 	currentChatId = chatId;
 
 	const selectedChat = chatsData.find((chat) => chat.id === chatId);
@@ -114,20 +125,7 @@ const loadChatContent = (chatId: number, chats: Chat[]): void => {
 	const chatContent = document.querySelector(".messenger__chat");
 
 	if (chatContent) {
-		const hasMessages =
-			selectedChat.messages && selectedChat.messages.length > 0;
-
-		const messagesHtml = hasMessages
-			? selectedChat.messages
-					.map(
-						(message) => `
-                <div class="message message--${message.type}">
-                    <p>${message.content}</p>
-                    <span class="message__time">${message.time}</span>
-                </div>`,
-					)
-					.join("")
-			: `<div class="no-messages-info"><p>Сообщений пока нет</p></div>`;
+		const messagesHtml = await loadMessagesForChat();
 
 		chatContent.innerHTML = getChatTemplate(selectedChat, messagesHtml);
 
@@ -150,13 +148,13 @@ const loadChatContent = (chatId: number, chats: Chat[]): void => {
 
 		messageForm?.addEventListener("submit", (event) => {
 			event.preventDefault();
-			sendMessage(chats);
+			sendMessageToChatHandler(chats);
 		});
 
 		messageInput?.addEventListener("keydown", (event) => {
 			if (event.key === "Enter" && !event.shiftKey) {
 				event.preventDefault();
-				sendMessage(chats);
+				sendMessageToChatHandler(chats);
 			}
 		});
 
@@ -191,6 +189,14 @@ const loadChatContent = (chatId: number, chats: Chat[]): void => {
 			const chatId = selectedChat.id;
 
 			try {
+				const currentUser = await fetchCurrentUser();
+				const currentUserId = currentUser.id;
+
+				if (userId === currentUserId) {
+					alert("Вы не можете удалить себя из чата");
+					return;
+				}
+
 				await removeUserFromChat(userId, chatId);
 				alert("Пользователь удалён из чата");
 				userIdInput.value = "";
@@ -202,9 +208,112 @@ const loadChatContent = (chatId: number, chats: Chat[]): void => {
 			}
 		});
 	}
+
+	connectToChat(chatId);
 };
 
-const sendMessage = async (chats: Chat[]): Promise<void> => {
+const loadMessagesForChat = async (): Promise<string> => {
+	if (currentChatId === null) {
+		return `<div class="no-messages-info"><p>Сообщений пока нет</p></div>`;
+	}
+
+	try {
+		const savedMessages = getMessagesFromLocalStorage(currentChatId);
+
+		if (savedMessages.length === 0) {
+			return `<div class="no-messages-info"><p>Сообщений пока нет</p></div>`;
+		}
+
+		return savedMessages
+			.map(
+				(message) => `
+          <div class="message message--${message.type}">
+            <div class="message__sender">
+              <span class="message__sender-login">${message.userLogin}</span> 
+              <span class="message__sender-id">(ID: ${message.userId})</span>
+            </div>
+
+            <div class="message__content">
+              <p>${message.content}</p>
+              <span class="message__time">${message.time}</span>
+            </div>
+          </div>`,
+			)
+			.join("");
+	} catch (err) {
+		console.error("Ошибка при загрузке сообщений:", err);
+		return `<div class="error">Не удалось загрузить сообщения</div>`;
+	}
+};
+
+const saveMessagesLocally = (chatId: number, messages: Message[]): void => {
+	const messagesString = JSON.stringify(messages);
+	localStorage.setItem(`chat_${chatId}_messages`, messagesString);
+};
+
+const getMessagesFromLocalStorage = (chatId: number): Message[] => {
+	const messagesString = localStorage.getItem(`chat_${chatId}_messages`);
+	if (messagesString) {
+		return JSON.parse(messagesString);
+	}
+	return [];
+};
+
+const deleteMessagesFromLocalStorage = (chatId: number): void => {
+	localStorage.removeItem(`chat_${chatId}_messages`);
+};
+
+const addMessageToChat = (message: Message, chats: Chat[]): void => {
+	console.log(message);
+
+	if (currentChatId !== null) {
+		const selectedChat = chats.find((chat) => chat.id === currentChatId);
+
+		if (!selectedChat) {
+			console.error("Чат с таким ID не найден:", currentChatId);
+			return;
+		}
+
+		if (!selectedChat.messages) {
+			selectedChat.messages = [];
+		}
+
+		selectedChat.messages.push(message);
+
+		saveMessagesLocally(currentChatId, selectedChat.messages);
+
+		const chatMessagesContainer = document.querySelector(".chat-messages");
+
+		selectedChat.lastMessage = message.content;
+		selectedChat.lastMessageTime = message.time;
+
+		if (chatMessagesContainer) {
+			const newMessageHtml = `
+        <div class="message message--${message.type}">
+          <div class="message__sender">
+            <span class="message__sender-login">${message.userLogin}</span> 
+            <span class="message__sender-id">(ID: ${message.userId})</span>
+          </div>
+
+          <div class="message__content">
+            <p>${message.content}</p>
+            <span class="message__time">${message.time}</span>
+          </div>
+        </div>`;
+			chatMessagesContainer.innerHTML += newMessageHtml;
+
+			chatMessagesContainer.scrollTop =
+				chatMessagesContainer.scrollHeight;
+		}
+
+		const noMessagesInfo = document.querySelector(".no-messages-info");
+		if (noMessagesInfo) {
+			noMessagesInfo.remove();
+		}
+	}
+};
+
+const sendMessageToChatHandler = async (chats: Chat[]): Promise<void> => {
 	const messageInput = document.getElementById("message") as HTMLInputElement;
 	const messageContent = messageInput.value.trim();
 
@@ -224,51 +333,13 @@ const sendMessage = async (chats: Chat[]): Promise<void> => {
 		addMessageToChat(newMessage, chats);
 		messageInput.value = "";
 
+		sendMessage(messageContent);
+
 		const messengerChat = document.querySelector(".messenger__chat");
 		if (messengerChat) {
 			messengerChat.scrollTop = messengerChat.scrollHeight;
 		}
 		messageInput.focus();
-	}
-};
-
-const addMessageToChat = (message: Message, chats: Chat[]): void => {
-	if (currentChatId !== null) {
-		const selectedChat = chats.find((chat) => chat.id === currentChatId);
-
-		if (!selectedChat) {
-			console.error("Чат с таким ID не найден:", currentChatId);
-			return;
-		}
-
-		const chatMessagesContainer = document.querySelector(".chat-messages");
-
-		selectedChat.lastMessage = message.content;
-		selectedChat.lastMessageTime = message.time;
-
-		if (chatMessagesContainer) {
-			const newMessageHtml = `
-                <div class="message message--${message.type}">
-                    <div class="message__sender">
-                        <span class="message__sender-login">${message.userLogin}</span> 
-                        <span class="message__sender-id">(ID: ${message.userId})</span>
-                    </div>
-
-					<div class="message__content">
-						<p>${message.content}</p>
-						<span class="message__time">${message.time}</span>
-					</div>
-                </div>`;
-			chatMessagesContainer.innerHTML += newMessageHtml;
-
-			chatMessagesContainer.scrollTop =
-				chatMessagesContainer.scrollHeight;
-		}
-
-		const noMessagesInfo = document.querySelector(".no-messages-info");
-		if (noMessagesInfo) {
-			noMessagesInfo.remove();
-		}
 	}
 };
 
@@ -304,6 +375,8 @@ export const mount = async (): Promise<void> => {
 						chatsData = await fetchChats();
 						renderChats();
 
+						deleteMessagesFromLocalStorage(chat.id);
+
 						if (currentChatId === chat.id) {
 							currentChatId = null;
 							const chatArea =
@@ -323,6 +396,7 @@ export const mount = async (): Promise<void> => {
 			element.addEventListener("click", () => {
 				loadChatContent(chat.id, chatsData);
 			});
+
 			chatList.appendChild(element);
 		});
 	};

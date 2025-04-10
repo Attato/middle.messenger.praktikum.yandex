@@ -122,3 +122,20 @@ export const fetchCurrentUser = async () => {
 	const user = await response.json();
 	return user;
 };
+
+export const getChatToken = async (chatId: number): Promise<string> => {
+	const response = await fetch(`${API_BASE}/chats/token/${chatId}`, {
+		method: "POST",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+
+	if (!response.ok) {
+		throw new Error(`Ошибка получения токена чата: ${response.status}`);
+	}
+
+	const data = await response.json();
+	return data.token;
+};
