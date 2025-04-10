@@ -18,7 +18,12 @@ const checkAuthStatus = async (): Promise<boolean> => {
 				credentials: "include",
 			},
 		);
-		return response.ok;
+
+		if (!response.ok) return false;
+
+		const data = await response.json();
+
+		return !!data?.id;
 	} catch (err) {
 		console.error("Ошибка при проверке авторизации:", err);
 		return false;
