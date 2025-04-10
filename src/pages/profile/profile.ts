@@ -153,7 +153,7 @@ export const mount = async (): Promise<void> => {
 				);
 
 				if (res.ok) {
-					window.location.href = "/login";
+					window.location.href = "/";
 				} else {
 					const error = await res.json();
 					alert("Ошибка: " + error.reason);
