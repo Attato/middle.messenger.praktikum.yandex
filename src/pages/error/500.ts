@@ -5,7 +5,7 @@ export const render = (): string => {
 		<main class="error">
             <h1>Ошибка 500!</h1>
             <p>Мы уже фиксим.</p>
-            <a href="/chat">Назад к чатам</a>
+            <a href="/">Вернуться на главную</a>
         </main>
 	`;
 };
