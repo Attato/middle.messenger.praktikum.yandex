@@ -3,16 +3,28 @@ import { Chat } from "./interfaces";
 export const getChatTemplate = (
 	selectedChat: Chat,
 	messagesHtml: string,
-): string => `
+): string => {
+	const avatarUrl = selectedChat.avatar
+		? selectedChat.avatar
+		: "/static/images/avatar.webp";
+
+	return `
     <header class="chat-header">
-        <h2>${selectedChat.title} (ID: ${selectedChat.id})</h2>
+        <div class="header__wrapper">
+            <div class="chat-header__avatar">
+                <img src="${avatarUrl}" alt="Аватар чата" id="chat-avatar" />
+               
+                <input type="file" id="avatar-file-input" class="avatar-file-input" />
+                <button id="save-avatar-button" class="save-avatar-button">Сохранить</button>
+            </div>
+            <h2>${selectedChat.title} (ID: ${selectedChat.id})</h2>
+        </div>
 
         <form id="chat-users-form" class="chat-users-form">
             <div class="chat-users" id="chat-users-list"></div>
 
             <div class="user-management">
                 <input type="number" id="user-id-input" placeholder="ID пользователя" required />
-
                 <div class="buttons">
                     <button type="submit" id="add-user-button">Добавить</button>
                     <button type="button" id="remove-user-button">Удалить</button>
@@ -42,4 +54,5 @@ export const getChatTemplate = (
             </button>
         </form>
     </footer>
-`;
+  `;
+};

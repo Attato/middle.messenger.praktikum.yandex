@@ -8,6 +8,9 @@ import {
 	checkUserExists,
 	getChatUsers,
 	fetchCurrentUser,
+	updateChatAvatar,
+	getChatAvatarUrl,
+	getUserAvatarUrl,
 } from "pages/chat/utils/api";
 
 import {
@@ -38,8 +41,15 @@ export const updateChatUsers = async (chatId: number): Promise<void> => {
       <ul>
         ${users
 			.map(
-				(user) =>
-					`<li>${user.login} (ID: ${user.id})${user.id === currentUserId ? " (Вы)" : ""}</li>`,
+				(user) => `
+            <li>
+              <div class="user-item">
+                <img src="${getUserAvatarUrl(user) || "/static/images/avatar.webp"}" alt="${user.login}" class="user-avatar" />
+                <span class="user-login">${user.login}</span> &nbsp; (ID: ${user.id})
+                ${user.id === currentUserId ? " (Вы)" : ""}
+              </div>
+            </li>
+          `,
 			)
 			.join("")}
       </ul>
@@ -57,7 +67,7 @@ export const loadChatContent = async (
 ): Promise<void> => {
 	currentChatId = chatId;
 
-	const selectedChat = chatsData.find((chat) => chat.id === chatId);
+	const selectedChat = chats.find((chat) => chat.id === chatId);
 
 	if (!selectedChat) {
 		console.error("Чат не найден по ID:", chatId);
@@ -72,6 +82,70 @@ export const loadChatContent = async (
 		chatContent.innerHTML = getChatTemplate(selectedChat, messagesHtml);
 
 		updateChatUsers(selectedChat.id);
+
+		const chatAvatar = document.getElementById(
+			"chat-avatar",
+		) as HTMLImageElement;
+		const avatarUrl =
+			getChatAvatarUrl(selectedChat) ?? "/static/images/avatar.webp";
+
+		if (chatAvatar) {
+			chatAvatar.src = `${avatarUrl}?t=${new Date().getTime()}`;
+		}
+
+		const avatarFileInput = document.getElementById(
+			"avatar-file-input",
+		) as HTMLInputElement;
+		const saveAvatarButton = document.getElementById(
+			"save-avatar-button",
+		) as HTMLButtonElement;
+
+		let selectedFile: File | null = null;
+
+		avatarFileInput?.addEventListener("change", (event) => {
+			selectedFile =
+				(event.target as HTMLInputElement).files?.[0] ?? null;
+		});
+
+		saveAvatarButton?.addEventListener("click", async () => {
+			if (selectedFile && currentChatId !== null) {
+				try {
+					if (!selectedFile.type.startsWith("image/")) {
+						alert("Выберите изображение в качестве аватара.");
+						return;
+					}
+
+					const formData = new FormData();
+					formData.append("avatar", selectedFile);
+					formData.append("chatId", selectedChat.id.toString());
+
+					await updateChatAvatar(formData);
+
+					const updatedAvatarUrl =
+						await getChatAvatarUrl(selectedChat);
+
+					if (updatedAvatarUrl) {
+						const chatAvatar = document.getElementById(
+							"chat-avatar",
+						) as HTMLImageElement;
+						if (chatAvatar) {
+							chatAvatar.src = updatedAvatarUrl;
+						}
+
+						alert("Аватар успешно обновлен!");
+					} else {
+						console.error("Не удалось получить URL аватара.");
+					}
+
+					location.reload();
+				} catch (error) {
+					alert("Ошибка при обновлении аватара!");
+					console.error(error);
+				}
+			} else {
+				alert("Пожалуйста, выберите изображение перед сохранением.");
+			}
+		});
 
 		const messageForm = document.getElementById("message-form");
 		const messageInput = document.getElementById(
