@@ -1,6 +1,6 @@
 import { Chat } from "pages/chat/utils/interfaces";
 
-const API_BASE = "https://ya-praktikum.tech/api/v2";
+export const API_BASE = "https://ya-praktikum.tech/api/v2";
 
 export const fetchChats = async (): Promise<Chat[]> => {
 	const response = await fetch(`${API_BASE}/chats`, {
@@ -138,4 +138,71 @@ export const getChatToken = async (chatId: number): Promise<string> => {
 
 	const data = await response.json();
 	return data.token;
+};
+
+export const getAvatarUrl = (avatarPath: string | null): string | null => {
+	if (!avatarPath) return null;
+	return `${API_BASE}/resources${avatarPath}`;
+};
+
+export const getUserAvatarUrl = (user: {
+	avatar: string | null;
+}): string | null => {
+	return getAvatarUrl(user.avatar);
+};
+
+export const getChatAvatarUrl = (chat: {
+	avatar: string | null;
+}): string | null => {
+	return getAvatarUrl(chat.avatar);
+};
+
+export const updateUserAvatar = (formData: FormData): Promise<void> => {
+	return fetch("https://ya-praktikum.tech/api/v2/user/profile/avatar", {
+		method: "PUT",
+		body: formData,
+		credentials: "include",
+	})
+		.then((response) => {
+			if (!response.ok) {
+				return response.json().then((error) => {
+					throw new Error(error.reason || "Неизвестная ошибка");
+				});
+			}
+		})
+		.catch((err) => {
+			console.error("Ошибка при обновлении аватара:", err);
+			alert("Ошибка при обновлении аватара: " + err.message);
+		});
+};
+
+export const updateChatAvatar = async (formData: FormData): Promise<void> => {
+	try {
+		const response = await fetch(`${API_BASE}/chats/avatar`, {
+			method: "PUT",
+			body: formData,
+			credentials: "include",
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(
+				`Ошибка при обновлении аватара: ${errorData.reason || response.status}`,
+			);
+		}
+
+		const newAvatarUrl: string | null = await getChatAvatarUrl({
+			avatar: formData.get("avatar")?.toString() ?? null,
+		});
+
+		const chatAvatar = document.getElementById(
+			"chat-avatar",
+		) as HTMLImageElement;
+		if (chatAvatar && newAvatarUrl) {
+			chatAvatar.src = newAvatarUrl;
+		}
+	} catch (error) {
+		console.error(error);
+		alert("Ошибка при обновлении аватара!");
+	}
 };
