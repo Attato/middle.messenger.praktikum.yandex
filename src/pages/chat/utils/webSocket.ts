@@ -53,6 +53,7 @@ export const sendMessage = (messageContent: string) => {
 					content: messageContent,
 					type: "message",
 					userId: currentUser.id,
+					userLogin: currentUser.login,
 				}),
 			);
 		});
