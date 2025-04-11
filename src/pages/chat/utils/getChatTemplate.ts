@@ -6,7 +6,7 @@ export const getChatTemplate = (
 ): string => {
 	const avatarUrl = selectedChat.avatar
 		? selectedChat.avatar
-		: "/static/images/avatar.webp";
+		: "/public/images/avatar.webp";
 
 	return `
     <header class="chat-header">

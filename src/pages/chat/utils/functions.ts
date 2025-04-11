@@ -44,7 +44,7 @@ export const updateChatUsers = async (chatId: number): Promise<void> => {
 				(user) => `
             <li>
               <div class="user-item">
-                <img src="${getUserAvatarUrl(user) || "/static/images/avatar.webp"}" alt="${user.login}" class="user-avatar" />
+                <img src="${getUserAvatarUrl(user) || "/public/images/avatar.webp"}" alt="${user.login}" class="user-avatar" />
                 <span class="user-login">${user.login}</span> &nbsp; (ID: ${user.id})
                 ${user.id === currentUserId ? " (Вы)" : ""}
               </div>
@@ -87,7 +87,7 @@ export const loadChatContent = async (
 			"chat-avatar",
 		) as HTMLImageElement;
 		const avatarUrl =
-			getChatAvatarUrl(selectedChat) ?? "/static/images/avatar.webp";
+			getChatAvatarUrl(selectedChat) ?? "/public/images/avatar.webp";
 
 		if (chatAvatar) {
 			chatAvatar.src = `${avatarUrl}?t=${new Date().getTime()}`;

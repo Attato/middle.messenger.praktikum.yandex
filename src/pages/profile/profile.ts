@@ -87,7 +87,7 @@ export const mount = async (): Promise<void> => {
 
 	const avatarUrl = userData.avatar
 		? `${API_BASE}/resources${userData.avatar}`
-		: "/static/images/avatar.webp";
+		: "/public/images/avatar.webp";
 
 	document.body.innerHTML = render();
 
