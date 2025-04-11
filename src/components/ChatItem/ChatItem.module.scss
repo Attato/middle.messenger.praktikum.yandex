@@ -21,6 +21,12 @@
 		border-bottom: 1px solid $border-color;
 	}
 
+	.chatLink__avatar {
+		min-width: 40px;
+		height: 40px;
+		border-radius: 100%;
+	}
+
 	.chatLink__main {
 		display: flex;
 		justify-content: space-between;

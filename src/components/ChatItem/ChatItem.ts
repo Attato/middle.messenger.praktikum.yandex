@@ -3,6 +3,8 @@ import { Block } from "../Block";
 
 import { Chat } from "pages/chat/utils/interfaces";
 
+import { getChatAvatarUrl } from "pages/chat/utils/api";
+
 import styles from "./ChatItem.module.scss";
 
 interface ChatItemProps extends Chat {
@@ -50,6 +52,17 @@ export class ChatItem extends Block<ChatItemProps> {
 
 		main.appendChild(header);
 		main.appendChild(data);
+
+		const avatarUrl =
+			getChatAvatarUrl(this.props) ?? "/static/images/avatar.webp";
+
+		if (avatarUrl) {
+			const avatar = document.createElement("img");
+			avatar.src = avatarUrl;
+			avatar.alt = "Аватар чата";
+			avatar.classList.add(styles.chatLink__avatar);
+			container.appendChild(avatar);
+		}
 
 		container.appendChild(main);
 
