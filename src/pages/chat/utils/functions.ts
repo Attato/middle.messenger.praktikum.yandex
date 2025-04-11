@@ -155,7 +155,11 @@ export const loadChatContent = async (
 };
 
 const formatTime = (time: Date | string): string => {
-	return new Date(time).toLocaleTimeString([], {
+	const date = new Date(time);
+	if (isNaN(date.getTime())) {
+		return "Время поломалось.";
+	}
+	return date.toLocaleTimeString([], {
 		hour: "2-digit",
 		minute: "2-digit",
 	});
@@ -298,8 +302,6 @@ export const handleIncomingMessage = async (
 	if (messageData.userId === currentUserId) {
 		return;
 	}
-
-	messageData.time = formatTime(messageData.time);
 
 	const message = await formatMessage(messageData);
 
