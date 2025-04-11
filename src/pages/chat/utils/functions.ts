@@ -273,8 +273,9 @@ const handleSendMessage = async (
 	const messageContentFinal = messageContent.trim();
 
 	if (messageContentFinal && currentChatId !== null) {
+		const currentUser = await fetchCurrentUser();
 		const newMessage = await formatMessage(
-			{ content: messageContentFinal },
+			{ content: messageContentFinal, userLogin: currentUser.login },
 			"sent",
 		);
 
