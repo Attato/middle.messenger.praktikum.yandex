@@ -154,6 +154,47 @@ export const loadChatContent = async (
 	connectToChat(chatId);
 };
 
+const formatTime = (time: Date | string): string => {
+	return new Date(time).toLocaleTimeString([], {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
+};
+
+const formatMessage = async (
+	messageData: Partial<Message>,
+	typeOverride?: "sent" | "received",
+): Promise<Message> => {
+	const currentUser = await fetchCurrentUser();
+
+	return {
+		content: messageData.content ?? "",
+		time: messageData.time
+			? formatTime(messageData.time)
+			: formatTime(new Date()),
+		type:
+			typeOverride ??
+			(messageData.userId === currentUser.id ? "sent" : "received"),
+		userId: messageData.userId ?? currentUser.id,
+		userLogin: messageData.userLogin ?? currentUser.login,
+	};
+};
+
+const renderMessageHtml = (message: Message): string => {
+	return `
+    <div class="message message--${message.type}">
+      <div class="message__sender">
+        <span class="message__sender-login">${message.userLogin}</span> 
+        <span class="message__sender-id">(ID: ${message.userId})</span>
+      </div>
+
+      <div class="message__content">
+        <p>${message.content}</p>
+        <span class="message__time">${message.time}</span>
+      </div>
+    </div>`;
+};
+
 export const loadMessagesForChat = async (): Promise<string> => {
 	if (currentChatId === null) {
 		return `<div class="no-messages-info"><p>Сообщений пока нет</p></div>`;
@@ -166,25 +207,57 @@ export const loadMessagesForChat = async (): Promise<string> => {
 			return `<div class="no-messages-info"><p>Сообщений пока нет</p></div>`;
 		}
 
-		return savedMessages
-			.map(
-				(message) => `
-          <div class="message message--${message.type}">
-            <div class="message__sender">
-              <span class="message__sender-login">${message.userLogin}</span> 
-              <span class="message__sender-id">(ID: ${message.userId})</span>
-            </div>
-
-            <div class="message__content">
-              <p>${message.content}</p>
-              <span class="message__time">${message.time}</span>
-            </div>
-          </div>`,
-			)
-			.join("");
+		return savedMessages.map(renderMessageHtml).join("");
 	} catch (err) {
 		console.error("Ошибка при загрузке сообщений:", err);
 		return `<div class="error">Не удалось загрузить сообщения</div>`;
+	}
+};
+
+const scrollChatToBottom = (): void => {
+	const container = document.querySelector(".chat-messages");
+	if (container) {
+		container.scrollTop = container.scrollHeight;
+	}
+};
+
+const removeNoMessagesInfo = (): void => {
+	const noMessagesInfo = document.querySelector(".no-messages-info");
+	if (noMessagesInfo) {
+		noMessagesInfo.remove();
+	}
+};
+
+const addMessageToChat = (message: Message, chats: Chat[]): void => {
+	console.log(message);
+
+	if (currentChatId !== null) {
+		const selectedChat = chats.find((chat) => chat.id === currentChatId);
+
+		if (!selectedChat) {
+			console.error("Чат с таким ID не найден:", currentChatId);
+			return;
+		}
+
+		if (!selectedChat.messages) {
+			selectedChat.messages = [];
+		}
+
+		selectedChat.messages.push(message);
+
+		saveMessagesLocally(currentChatId, selectedChat.messages);
+
+		const chatMessagesContainer = document.querySelector(".chat-messages");
+
+		selectedChat.lastMessage = message.content;
+		selectedChat.lastMessageTime = message.time;
+
+		if (chatMessagesContainer) {
+			chatMessagesContainer.innerHTML += renderMessageHtml(message);
+		}
+
+		removeNoMessagesInfo();
+		scrollChatToBottom();
 	}
 };
 
@@ -193,78 +266,15 @@ const handleSendMessage = async (
 	messageContent: string,
 ): Promise<void> => {
 	const messageInput = document.getElementById("message") as HTMLInputElement;
-
 	const messageContentFinal = messageContent.trim();
 
 	if (messageContentFinal && currentChatId !== null) {
-		const currentUser = await fetchCurrentUser();
-		const newMessage: Message = {
-			content: messageContentFinal,
-			time: new Date().toLocaleTimeString([], {
-				hour: "2-digit",
-				minute: "2-digit",
-			}),
-			type: "sent",
-			userId: currentUser.id,
-			userLogin: currentUser.login,
-		};
-
-		const addMessageToChat = (message: Message, chats: Chat[]): void => {
-			console.log(message);
-
-			if (currentChatId !== null) {
-				const selectedChat = chats.find(
-					(chat) => chat.id === currentChatId,
-				);
-
-				if (!selectedChat) {
-					console.error("Чат с таким ID не найден:", currentChatId);
-					return;
-				}
-
-				if (!selectedChat.messages) {
-					selectedChat.messages = [];
-				}
-
-				selectedChat.messages.push(message);
-
-				saveMessagesLocally(currentChatId, selectedChat.messages);
-
-				const chatMessagesContainer =
-					document.querySelector(".chat-messages");
-
-				selectedChat.lastMessage = message.content;
-				selectedChat.lastMessageTime = message.time;
-
-				if (chatMessagesContainer) {
-					const newMessageHtml = `
-            <div class="message message--${message.type}">
-              <div class="message__sender">
-                <span class="message__sender-login">${message.userLogin}</span> 
-                <span class="message__sender-id">(ID: ${message.userId})</span>
-              </div>
-
-              <div class="message__content">
-                <p>${message.content}</p>
-                <span class="message__time">${message.time}</span>
-              </div>
-            </div>`;
-					chatMessagesContainer.innerHTML += newMessageHtml;
-
-					chatMessagesContainer.scrollTop =
-						chatMessagesContainer.scrollHeight;
-				}
-
-				const noMessagesInfo =
-					document.querySelector(".no-messages-info");
-				if (noMessagesInfo) {
-					noMessagesInfo.remove();
-				}
-			}
-		};
+		const newMessage = await formatMessage(
+			{ content: messageContentFinal },
+			"sent",
+		);
 
 		addMessageToChat(newMessage, chats);
-
 		sendMessage(messageContentFinal);
 
 		messageInput.value = "";
@@ -283,39 +293,15 @@ export const handleIncomingMessage = async (
 	if (currentChatId === null) return;
 
 	const currentUser = await fetchCurrentUser();
+	const currentUserId = currentUser.id;
 
-	const message: Message = {
-		...messageData,
-		type: messageData.userId === currentUser.id ? "sent" : "received",
-	};
-
-	const selectedChat = chatsData.find((chat) => chat.id === currentChatId);
-	if (!selectedChat) return;
-
-	if (!selectedChat.messages) {
-		selectedChat.messages = [];
+	if (messageData.userId === currentUserId) {
+		return;
 	}
 
-	selectedChat.messages.push(message);
-	saveMessagesLocally(currentChatId, selectedChat.messages);
+	messageData.time = formatTime(messageData.time);
 
-	const chatMessagesContainer = document.querySelector(".chat-messages");
-	if (chatMessagesContainer) {
-		const newMessageHtml = `
-      <div class="message message--${message.type}">
-        <div class="message__sender">
-          <span class="message__sender-login">${message.userLogin}</span> 
-          <span class="message__sender-id">(ID: ${message.userId})</span>
-        </div>
-        <div class="message__content">
-          <p>${message.content}</p>
-          <span class="message__time">${message.time}</span>
-        </div>
-      </div>`;
-		chatMessagesContainer.innerHTML += newMessageHtml;
-		chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-	}
+	const message = await formatMessage(messageData);
 
-	const noMessagesInfo = document.querySelector(".no-messages-info");
-	if (noMessagesInfo) noMessagesInfo.remove();
+	addMessageToChat(message, chatsData);
 };
