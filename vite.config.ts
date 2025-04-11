@@ -2,6 +2,16 @@ import { defineConfig } from "vite";
 import path from "path";
 
 export default defineConfig({
+	server: {
+		proxy: {
+			"/api": {
+				target: "https://ya-praktikum.tech",
+				changeOrigin: true,
+				secure: true,
+				rewrite: (path) => path.replace(/^\/api/, ""),
+			},
+		},
+	},
 	resolve: {
 		alias: {
 			pages: path.resolve(__dirname, "src/pages"),
