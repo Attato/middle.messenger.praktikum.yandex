@@ -46,13 +46,16 @@ export const connectToChat = async (chatId: number) => {
 };
 
 export const sendMessage = (messageContent: string) => {
-	if (socket && socket.readyState === WebSocket.OPEN) {
-		socket.send(
-			JSON.stringify({
-				content: messageContent,
-				type: "message",
-			}),
-		);
+	if (socket?.readyState === WebSocket.OPEN) {
+		fetchCurrentUser().then((currentUser) => {
+			socket?.send(
+				JSON.stringify({
+					content: messageContent,
+					type: "message",
+					userId: currentUser.id,
+				}),
+			);
+		});
 	} else {
 		console.warn("WebSocket не подключен или закрыт");
 	}
