@@ -45,3 +45,9 @@ button {
 		background-color: $background-color-light;
 	}
 }
+
+hr {
+	margin-top: 12px;
+	border: 1px solid $border-color;
+	border-bottom-color: transparent;
+}
