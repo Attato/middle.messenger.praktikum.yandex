@@ -1,7 +1,11 @@
 import Handlebars from "handlebars";
 import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
-import { fetchCurrentUser } from "pages/chat/utils/api";
+import {
+	API_BASE,
+	fetchCurrentUser,
+	updateUserAvatar,
+} from "pages/chat/utils/api";
 
 import "pages/profile/profile.scss";
 
@@ -35,15 +39,23 @@ const templateSource = `
   <div class="profile">
     <header class="title-wrap">
       <a href="/chat">Вернуться к чатам</a>
-      <h1>
-        Профиль:
-        <span class="profile__login">{{login}}</span>
-      </h1>  
+      <h1>Профиль: <span class="profile__login">{{login}}</span></h1>  
     </header>
 
     <form id="profile-form">
+      <div class="profile__avatar">
+        <img id="user-avatar" src="{{avatarUrl}}" alt="Аватар" class="profile__avatar-img" />
+
+		<div class="action__wrap">
+			<input type="file" id="avatar-input" accept="image/*" />
+			<button type="button" id="avatar-save-btn">Сохранить аватар</button>
+		</div>
+      </div>
+
+	  <hr />
+
       <div class="input__wrap" id="input-wrapper"></div>
-      
+
       <div class="button__wrap">
         <button type="submit" class="button__white">Сохранить изменения</button>
       </div>
@@ -73,6 +85,10 @@ export const mount = async (): Promise<void> => {
 		return;
 	}
 
+	const avatarUrl = userData.avatar
+		? `${API_BASE}/resources${userData.avatar}`
+		: "/static/images/avatar.webp";
+
 	document.body.innerHTML = render();
 
 	const loginElement = document.createElement("span");
@@ -80,7 +96,6 @@ export const mount = async (): Promise<void> => {
 	loginElement.textContent = userData.login || "";
 
 	const h1Element = document.querySelector(".profile h1");
-
 	if (h1Element) {
 		h1Element.appendChild(loginElement);
 	}
@@ -89,6 +104,43 @@ export const mount = async (): Promise<void> => {
 	const inputWrapper = document.getElementById("input-wrapper");
 	const form = document.getElementById("profile-form") as HTMLFormElement;
 	const logoutBtn = document.getElementById("logout-btn");
+
+	const userAvatarElement = document.getElementById(
+		"user-avatar",
+	) as HTMLImageElement;
+	if (userAvatarElement) {
+		userAvatarElement.src = avatarUrl;
+	}
+
+	const avatarInput = document.getElementById(
+		"avatar-input",
+	) as HTMLInputElement;
+	const avatarSaveBtn = document.getElementById("avatar-save-btn");
+
+	if (avatarInput && avatarSaveBtn) {
+		avatarSaveBtn.addEventListener("click", async () => {
+			if (avatarInput.files && avatarInput.files[0]) {
+				const formData = new FormData();
+				formData.append("avatar", avatarInput.files[0]);
+
+				try {
+					await updateUserAvatar(formData);
+					alert("Аватар успешно обновлен");
+
+					const updatedUserData = await fetchCurrentUser();
+					const updatedAvatarUrl = updatedUserData.avatar
+						? `${API_BASE}/resources${updatedUserData.avatar}`
+						: "/static/images/avatar.webp";
+					if (userAvatarElement) {
+						userAvatarElement.src = updatedAvatarUrl;
+					}
+				} catch (err) {
+					console.error("Ошибка при обновлении аватара:", err);
+					alert("Не удалось обновить аватар");
+				}
+			}
+		});
+	}
 
 	if (inputWrapper) {
 		profileData.fields.forEach((field: InputProps) => {
