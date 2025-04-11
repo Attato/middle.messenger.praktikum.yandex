@@ -16,6 +16,7 @@ const checkAuthStatus = async (): Promise<boolean> => {
 			{
 				method: "GET",
 				credentials: "include",
+				mode: "cors",
 			},
 		);
 
