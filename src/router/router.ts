@@ -1,85 +1,101 @@
-type PageModule = () => Promise<{ render: () => string | Promise<string> }>;
+interface Route {
+	pathname: string;
+	block: () => void | Promise<void>;
+	match(pathname: string): boolean;
+	render(route: Route): Promise<void>;
+	leave(): void;
+}
 
-const routes: Record<string, PageModule> = {
-	"/": () => import("pages/auth/signin"),
-	"/auth/signup": () => import("pages/auth/signup"),
-	"/chat": () => import("pages/chat/chat"),
-	"/profile": () => import("pages/profile/profile"),
-	"404": () => import("pages/error/404"),
-	"500": () => import("pages/error/500"),
-};
+class Router {
+	private static __instance: Router | null = null;
+	private routes: Route[] = [];
+	private history: History = window.history;
+	private _currentRoute: Route | null = null;
 
-const checkAuthStatus = async (): Promise<boolean> => {
-	try {
-		const response = await fetch(
-			"https://ya-praktikum.tech/api/v2/auth/user",
-			{
-				method: "GET",
-				credentials: "include",
-				mode: "cors",
+	public use(pathname: string, block: () => void | Promise<void>): Router {
+		const route: Route = {
+			pathname,
+			block,
+			match(pathname: string): boolean {
+				return pathname === this.pathname;
 			},
-		);
+			async render(route: Route): Promise<void> {
+				try {
+					await route.block();
+				} catch (error) {
+					console.error("Ошибка при рендере маршрута:", error);
+				}
+			},
+			leave(): void {
+				const mainPage = document.getElementById("main-page");
+				if (mainPage) {
+					mainPage.innerHTML = "";
+				}
+			},
+		};
 
-		if (!response.ok) return false;
-
-		const data = await response.json();
-
-		return !!data?.id;
-	} catch (err) {
-		console.error("Ошибка при проверке авторизации:", err);
-		return false;
+		this.routes.push(route);
+		return this;
 	}
-};
 
-export const route = (event: Event): void => {
-	event.preventDefault();
-
-	const target = event.target as HTMLAnchorElement;
-
-	if (target && target.href) {
-		window.history.pushState({}, "", target.href);
-
-		handleLocation();
-	}
-};
-
-export const handleLocation = async (): Promise<void> => {
-	const path: string = window.location.pathname;
-	const loader = routes[path] || routes["404"];
-	const mainPage = document.getElementById("main-page");
-
-	try {
-		if (path === "/" || path === "/auth/signup") {
-			const isAuthenticated = await checkAuthStatus();
-			if (isAuthenticated) {
-				window.location.href = "/chat";
-				return;
+	public start(): void {
+		document.body.addEventListener("click", (event: MouseEvent) => {
+			const target = event.target as HTMLElement;
+			if (target.tagName === "A") {
+				const href = target.getAttribute("href");
+				if (href) {
+					event.preventDefault();
+					this.go(href);
+				}
 			}
+		});
+
+		window.onpopstate = () => {
+			this._onRoute(window.location.pathname);
+		};
+
+		this._onRoute(window.location.pathname);
+	}
+
+	private async _onRoute(pathname: string): Promise<void> {
+		const route = this.getRoute(pathname);
+		if (!route) {
+			const notFound = this.getRoute("404");
+			if (notFound) await notFound.render(notFound);
+			return;
 		}
 
-		if (path === "/chat" || path === "/profile") {
-			const isAuthenticated = await checkAuthStatus();
-			if (!isAuthenticated) {
-				window.location.href = "/";
-				return;
-			}
+		if (this._currentRoute) {
+			this._currentRoute.leave();
 		}
 
-		const page = await loader();
-		const content = await page.render();
-		if (mainPage) mainPage.innerHTML = content;
-	} catch (error) {
-		console.error("Error loading route module:", error);
+		this._currentRoute = route;
 
 		try {
-			const page500 = await routes["500"]();
-			const html500 = await page500.render();
-			if (mainPage) mainPage.innerHTML = html500;
-		} catch (nestedError) {
-			console.error("Error loading 500 page:", nestedError);
+			await route.render(route);
+		} catch (error) {
+			const serverErrorRoute = this.getRoute("/500");
+			if (serverErrorRoute) {
+				await serverErrorRoute.render(serverErrorRoute);
+			}
 		}
 	}
-};
 
-window.addEventListener("popstate", handleLocation);
-window.addEventListener("DOMContentLoaded", handleLocation);
+	public go(pathname: string): void {
+		this.history.pushState({}, "", pathname);
+		this._onRoute(pathname);
+	}
+
+	private getRoute(pathname: string): Route | undefined {
+		return this.routes.find((route) => route.match(pathname));
+	}
+
+	public static getInstance(): Router {
+		if (!Router.__instance) {
+			Router.__instance = new Router();
+		}
+		return Router.__instance;
+	}
+}
+
+export default Router;

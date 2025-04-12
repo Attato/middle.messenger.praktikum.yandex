@@ -48,12 +48,12 @@ const templateSource = `
 </div>
 `;
 
-export const render = (): string => {
+export const signInRender = (): string => {
 	const template = Handlebars.compile(templateSource);
 	return template(authData);
 };
 
-export const mount = (): void => {
+export const signInMount = (): void => {
 	const eventBus = new EventBus();
 	const inputWrapper = document.getElementById("input-wrapper");
 	const form = document.getElementById("auth-form") as HTMLFormElement;
@@ -104,13 +104,3 @@ export const mount = (): void => {
 		});
 	}
 };
-
-if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", () => {
-		document.body.innerHTML = render();
-		mount();
-	});
-} else {
-	document.body.innerHTML = render();
-	mount();
-}

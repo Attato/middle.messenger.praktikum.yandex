@@ -30,12 +30,12 @@ const templateSource = `
 </div>
 `;
 
-export const render = (): string => {
+export const chatRender = (): string => {
 	const template = Handlebars.compile(templateSource);
-	return template({});
+	return template(chatsData);
 };
 
-export const mount = async (): Promise<void> => {
+export const chatMount = async (): Promise<void> => {
 	const eventBus = new EventBus();
 	const chatList = document.getElementById("messenger__sidebar");
 	const chatArea = document.querySelector(".messenger__chat");
@@ -126,13 +126,3 @@ export const mount = async (): Promise<void> => {
 		}
 	});
 };
-
-if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", () => {
-		document.body.innerHTML = render();
-		mount();
-	});
-} else {
-	document.body.innerHTML = render();
-	mount();
-}

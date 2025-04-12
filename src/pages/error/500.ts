@@ -1,6 +1,6 @@
 import "pages/error/error.scss";
 
-export const render = (): string => {
+export const error500Render = (): string => {
 	return `
 		<main class="error">
             <h1>Ошибка 500!</h1>

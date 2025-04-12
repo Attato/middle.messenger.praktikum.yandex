@@ -70,12 +70,12 @@ const templateSource = `
 </div>
 `;
 
-export const render = (): string => {
+export const profileRender = (): string => {
 	const template = Handlebars.compile(templateSource);
-	return template({});
+	return template(profileData);
 };
 
-export const mount = async (): Promise<void> => {
+export const profileMount = async (): Promise<void> => {
 	let userData: Record<string, string> = {};
 	try {
 		userData = await fetchCurrentUser();
@@ -88,8 +88,6 @@ export const mount = async (): Promise<void> => {
 	const avatarUrl = userData.avatar
 		? `${API_BASE}/resources${userData.avatar}`
 		: "/images/avatar.webp";
-
-	document.body.innerHTML = render();
 
 	const loginElement = document.createElement("span");
 	loginElement.classList.add("profile__login");
@@ -216,7 +214,7 @@ export const mount = async (): Promise<void> => {
 				);
 
 				if (res.ok) {
-					window.location.href = "/";
+					window.location.reload();
 				} else {
 					const error = await res.json();
 					alert("Ошибка: " + error.reason);
@@ -227,11 +225,3 @@ export const mount = async (): Promise<void> => {
 		});
 	}
 };
-
-if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", () => {
-		mount();
-	});
-} else {
-	mount();
-}
