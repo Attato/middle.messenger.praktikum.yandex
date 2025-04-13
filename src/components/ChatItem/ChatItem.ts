@@ -43,13 +43,6 @@ export class ChatItem extends Block<ChatItemProps> {
 		time.textContent = this.props.lastMessageTime;
 		data.appendChild(time);
 
-		if (this.props.unreadCount && this.props.unreadCount > 0) {
-			const badge = document.createElement("div");
-			badge.classList.add(styles.chatLink__count);
-			badge.textContent = String(this.props.unreadCount);
-			data.appendChild(badge);
-		}
-
 		main.appendChild(header);
 		main.appendChild(data);
 

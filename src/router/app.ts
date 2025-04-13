@@ -76,7 +76,7 @@ router
 			mainPage.innerHTML = error404Render();
 		}
 	})
-	.use("/500", async () => {
+	.use("500", async () => {
 		const mainPage = document.getElementById("main-page");
 		if (mainPage) {
 			mainPage.innerHTML = "";
