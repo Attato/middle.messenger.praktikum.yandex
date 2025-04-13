@@ -1,8 +1,6 @@
 // Цвета фона
 $background-color: #1b1b1e;
 $background-color-light: #202124;
-$avatar-background: #faebd7;
-$modal-background: rgba(0, 0, 0, 0.4);
 $grid-background: linear-gradient(#1f1f1f 1px, transparent 1px),
 	linear-gradient(90deg, #1f1f1f 1px, transparent 1px);
 
@@ -15,10 +13,11 @@ $white-color-hover: #bfbfbf;
 
 // Серые цвета
 $gray-color: #aaa;
+$dark-gray-color: #222;
 $gray-background: #2d2e31;
 $gray-background-hover: #3b3c3f;
 
 // Акцентные цвета
 $blue-color: #3369f3;
-$green-color: #4caf50;
+$green-color: #8bc34a;
 $red-color: #e91e1e;

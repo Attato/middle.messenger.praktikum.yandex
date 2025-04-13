@@ -1,19 +1,21 @@
-import { Chat } from "./interfaces";
-import { initialChats } from "./data";
+import { Message } from "pages/chat/utils/interfaces";
 
-export const loadChatsFromStorage = (): Chat[] => {
-	const chatsData = localStorage.getItem("chats");
-	return chatsData ? JSON.parse(chatsData) : initialChats;
-};
-export const saveChatsToStorage = (chats: Chat[]): void => {
-	localStorage.setItem("chats", JSON.stringify(chats));
-};
-
-export const loadCurrentChatId = (): number | null => {
-	const savedChatId = localStorage.getItem("currentChatId");
-	return savedChatId !== null ? Number(savedChatId) : null;
+export const saveMessagesLocally = (
+	chatId: number,
+	messages: Message[],
+): void => {
+	const messagesString = JSON.stringify(messages);
+	localStorage.setItem(`chat_${chatId}_messages`, messagesString);
 };
 
-export const saveCurrentChatId = (chatId: number): void => {
-	localStorage.setItem("currentChatId", String(chatId));
+export const getMessagesFromLocalStorage = (chatId: number): Message[] => {
+	const messagesString = localStorage.getItem(`chat_${chatId}_messages`);
+	if (messagesString) {
+		return JSON.parse(messagesString);
+	}
+	return [];
+};
+
+export const deleteMessagesFromLocalStorage = (chatId: number): void => {
+	localStorage.removeItem(`chat_${chatId}_messages`);
 };

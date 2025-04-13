@@ -1,0 +1,75 @@
+@use "../../../variables" as *;
+
+.chatLink {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 16px;
+	border-top: 1px solid $border-color;
+	transition: all 0.3s;
+
+	&:hover {
+		background-color: $gray-background;
+		cursor: pointer;
+
+		button:hover {
+			background-color: $gray-background-hover;
+		}
+	}
+
+	&:last-child {
+		border-bottom: 1px solid $border-color;
+	}
+
+	.chatLink__avatar {
+		min-width: 40px;
+		height: 40px;
+		border-radius: 100%;
+	}
+
+	.chatLink__main {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+
+		.chatLink__header {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+
+			h2 {
+				font-size: 16px;
+				font-weight: 400;
+				text-transform: capitalize;
+			}
+
+			p {
+				font-size: 14px;
+				color: $gray-color;
+			}
+		}
+
+		.chatLink__data {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			align-items: flex-end;
+
+			span {
+				font-size: 12px;
+			}
+
+			.chatLink__count {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 20px;
+				height: 20px;
+				background-color: $blue-color;
+				color: $white-color;
+				border-radius: 100%;
+				font-size: 11px;
+			}
+		}
+	}
+}
