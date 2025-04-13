@@ -1,8 +1,12 @@
 import { EventBus } from "./EventBus";
 
-export abstract class Block<
-	Props extends Record<string, any> = Record<string, any>,
-> {
+type EventHandler = (event: Event) => void;
+
+interface BlockProps {
+	events?: Record<string, EventHandler>;
+}
+
+export abstract class Block<Props extends BlockProps = BlockProps> {
 	protected props: Props;
 	protected eventBus: EventBus;
 	protected element: HTMLElement;

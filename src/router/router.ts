@@ -73,7 +73,7 @@ class Router {
 
 		try {
 			await route.render(route);
-		} catch (error) {
+		} catch {
 			const serverErrorRoute = this.getRoute("/500");
 			if (serverErrorRoute) {
 				await serverErrorRoute.render(serverErrorRoute);

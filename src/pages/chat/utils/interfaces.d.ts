@@ -21,3 +21,9 @@ export interface Message {
 	time: string;
 	type: "sent" | "received";
 }
+
+export interface User {
+	id: number;
+	login: string;
+	avatar: string | null;
+}

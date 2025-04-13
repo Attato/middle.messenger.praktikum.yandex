@@ -1,4 +1,4 @@
-import { Chat } from "pages/chat/utils/interfaces";
+import { Chat, User } from "pages/chat/utils/interfaces";
 
 export const API_BASE = "https://ya-praktikum.tech/api/v2";
 
@@ -48,10 +48,7 @@ export const deleteChat = async (chatId: number): Promise<void> => {
 	await checkResponse(response);
 };
 
-export const addUserToChat = async (
-	userId: number,
-	chatId: number,
-): Promise<void> => {
+export const addUserToChat = async (userId: number, chatId: number): Promise<void> => {
 	const response = await fetch(`${API_BASE}/chats/users`, {
 		method: "PUT",
 		credentials: "include",
@@ -64,10 +61,7 @@ export const addUserToChat = async (
 	await checkResponse(response);
 };
 
-export const removeUserFromChat = async (
-	userId: number,
-	chatId: number,
-): Promise<void> => {
+export const removeUserFromChat = async (userId: number, chatId: number): Promise<void> => {
 	const response = await fetch(`${API_BASE}/chats/users`, {
 		method: "DELETE",
 		credentials: "include",
@@ -90,7 +84,7 @@ export const checkUserExists = async (userId: number): Promise<boolean> => {
 	return response.ok;
 };
 
-export const getChatUsers = async (chatId: number): Promise<any[]> => {
+export const getChatUsers = async (chatId: number): Promise<User[]> => {
 	const response = await fetch(`${API_BASE}/chats/${chatId}/users`, {
 		credentials: "include",
 		headers: {
@@ -134,27 +128,20 @@ export const getAvatarUrl = (avatarPath: string | null): string | null => {
 	return `${API_BASE}/resources${avatarPath}`;
 };
 
-export const getUserAvatarUrl = (user: {
-	avatar: string | null;
-}): string | null => {
+export const getUserAvatarUrl = (user: { avatar: string | null }): string | null => {
 	return getAvatarUrl(user.avatar);
 };
 
-export const getChatAvatarUrl = (chat: {
-	avatar: string | null;
-}): string | null => {
+export const getChatAvatarUrl = (chat: { avatar: string | null }): string | null => {
 	return getAvatarUrl(chat.avatar);
 };
 
 export const updateUserAvatar = async (formData: FormData): Promise<void> => {
-	const response = await fetch(
-		"https://ya-praktikum.tech/api/v2/user/profile/avatar",
-		{
-			method: "PUT",
-			body: formData,
-			credentials: "include",
-		},
-	);
+	const response = await fetch("https://ya-praktikum.tech/api/v2/user/profile/avatar", {
+		method: "PUT",
+		body: formData,
+		credentials: "include",
+	});
 
 	await checkResponse(response);
 };
