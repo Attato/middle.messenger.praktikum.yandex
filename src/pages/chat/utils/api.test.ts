@@ -13,6 +13,8 @@ import {
 } from "./api";
 import { Chat } from "pages/chat/utils/interfaces";
 
+import { API_BASE } from "../../../api/apiBase";
+
 global.fetch = jest.fn();
 
 describe("API Чатов", () => {
@@ -48,7 +50,7 @@ describe("API Чатов", () => {
 		const result = await fetchChats();
 
 		expect(result).toEqual(mockChats);
-		expect(fetch).toHaveBeenCalledWith("https://ya-praktikum.tech/api/v2/chats", expect.any(Object));
+		expect(fetch).toHaveBeenCalledWith(`${API_BASE}/chats`, expect.any(Object));
 	});
 
 	test("fetchChats должен выбросить ошибку при неудачном ответе", async () => {
@@ -70,7 +72,7 @@ describe("API Чатов", () => {
 		await createChat("Клуб почитателей");
 
 		expect(fetch).toHaveBeenCalledWith(
-			"https://ya-praktikum.tech/api/v2/chats",
+			`${API_BASE}/chats`,
 			expect.objectContaining({
 				method: "POST",
 				body: JSON.stringify({ title: "Клуб почитателей" }),
@@ -86,7 +88,7 @@ describe("API Чатов", () => {
 		await deleteChat(1);
 
 		expect(fetch).toHaveBeenCalledWith(
-			"https://ya-praktikum.tech/api/v2/chats",
+			`${API_BASE}/chats`,
 			expect.objectContaining({
 				method: "DELETE",
 				body: JSON.stringify({ chatId: 1 }),
@@ -102,7 +104,7 @@ describe("API Чатов", () => {
 		await addUserToChat(1, 1);
 
 		expect(fetch).toHaveBeenCalledWith(
-			"https://ya-praktikum.tech/api/v2/chats/users",
+			`${API_BASE}/chats/users`,
 			expect.objectContaining({
 				method: "PUT",
 				body: JSON.stringify({ users: [1], chatId: 1 }),
@@ -118,7 +120,7 @@ describe("API Чатов", () => {
 		await removeUserFromChat(1, 1);
 
 		expect(fetch).toHaveBeenCalledWith(
-			"https://ya-praktikum.tech/api/v2/chats/users",
+			`${API_BASE}/chats/users`,
 			expect.objectContaining({
 				method: "DELETE",
 				body: JSON.stringify({ users: [1], chatId: 1 }),
@@ -182,7 +184,7 @@ describe("API Чатов", () => {
 		await updateUserAvatar(formData);
 
 		expect(fetch).toHaveBeenCalledWith(
-			"https://ya-praktikum.tech/api/v2/user/profile/avatar",
+			`${API_BASE}/user/profile/avatar`,
 			expect.objectContaining({
 				method: "PUT",
 				body: formData,
@@ -200,7 +202,7 @@ describe("API Чатов", () => {
 		await updateChatAvatar(formData);
 
 		expect(fetch).toHaveBeenCalledWith(
-			"https://ya-praktikum.tech/api/v2/chats/avatar",
+			`${API_BASE}/chats/avatar`,
 			expect.objectContaining({
 				method: "PUT",
 				body: formData,

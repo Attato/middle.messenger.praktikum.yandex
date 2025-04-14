@@ -1,6 +1,7 @@
 import Handlebars from "handlebars";
 import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
+import { API_BASE } from "../../api/apiBase";
 
 import "pages/auth/auth.scss";
 
@@ -79,17 +80,14 @@ export const signInMount = (): void => {
 			};
 
 			try {
-				const response = await fetch(
-					"https://ya-praktikum.tech/api/v2/auth/signin",
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify(payload),
-						credentials: "include",
+				const response = await fetch(`${API_BASE}/auth/signin`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
 					},
-				);
+					body: JSON.stringify(payload),
+					credentials: "include",
+				});
 
 				if (response.ok) {
 					window.location.href = "/chat";

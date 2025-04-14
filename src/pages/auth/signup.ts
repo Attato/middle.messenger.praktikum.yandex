@@ -3,6 +3,8 @@ import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
 import { attachValidationToForm } from "pages/auth/utils/formValidator";
 
+import { API_BASE } from "../../api/apiBase";
+
 import "pages/auth/auth.scss";
 
 const signUpData = {
@@ -96,17 +98,14 @@ export const signUpMount = (): void => {
 			});
 
 			try {
-				const response = await fetch(
-					"https://ya-praktikum.tech/api/v2/auth/signup",
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						credentials: "include",
-						body: JSON.stringify(payload),
+				const response = await fetch(`${API_BASE}/auth/signup`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
 					},
-				);
+					credentials: "include",
+					body: JSON.stringify(payload),
+				});
 
 				if (response.ok) {
 					window.location.href = "/chat";

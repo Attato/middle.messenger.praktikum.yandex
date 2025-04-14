@@ -1,6 +1,5 @@
 import { Chat, User } from "pages/chat/utils/interfaces";
-
-export const API_BASE = "https://ya-praktikum.tech/api/v2";
+import { API_BASE } from "../../../api/apiBase";
 
 const checkResponse = (response: Response) => {
 	if (!response.ok) {
@@ -137,7 +136,7 @@ export const getChatAvatarUrl = (chat: { avatar: string | null }): string | null
 };
 
 export const updateUserAvatar = async (formData: FormData): Promise<void> => {
-	const response = await fetch("https://ya-praktikum.tech/api/v2/user/profile/avatar", {
+	const response = await fetch(`${API_BASE}/user/profile/avatar`, {
 		method: "PUT",
 		body: formData,
 		credentials: "include",

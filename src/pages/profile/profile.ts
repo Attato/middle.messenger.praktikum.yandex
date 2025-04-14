@@ -1,11 +1,8 @@
 import Handlebars from "handlebars";
 import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
-import {
-	API_BASE,
-	fetchCurrentUser,
-	updateUserAvatar,
-} from "pages/chat/utils/api";
+import { fetchCurrentUser, updateUserAvatar } from "pages/chat/utils/api";
+import { API_BASE } from "../../api/apiBase";
 
 import "pages/profile/profile.scss";
 
@@ -85,9 +82,7 @@ export const profileMount = async (): Promise<void> => {
 		return;
 	}
 
-	const avatarUrl = userData.avatar
-		? `${API_BASE}/resources${userData.avatar}`
-		: "/images/avatar.webp";
+	const avatarUrl = userData.avatar ? `${API_BASE}/resources${userData.avatar}` : "/images/avatar.webp";
 
 	const loginElement = document.createElement("span");
 	loginElement.classList.add("profile__login");
@@ -103,16 +98,12 @@ export const profileMount = async (): Promise<void> => {
 	const form = document.getElementById("profile-form") as HTMLFormElement;
 	const logoutBtn = document.getElementById("logout-btn");
 
-	const userAvatarElement = document.getElementById(
-		"user-avatar",
-	) as HTMLImageElement;
+	const userAvatarElement = document.getElementById("user-avatar") as HTMLImageElement;
 	if (userAvatarElement) {
 		userAvatarElement.src = avatarUrl;
 	}
 
-	const avatarInput = document.getElementById(
-		"avatar-input",
-	) as HTMLInputElement;
+	const avatarInput = document.getElementById("avatar-input") as HTMLInputElement;
 	const avatarSaveBtn = document.getElementById("avatar-save-btn");
 
 	if (avatarInput && avatarSaveBtn) {
@@ -163,17 +154,14 @@ export const profileMount = async (): Promise<void> => {
 			});
 
 			try {
-				const response = await fetch(
-					"https://ya-praktikum.tech/api/v2/user/profile",
-					{
-						method: "PUT",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						credentials: "include",
-						body: JSON.stringify(payload),
+				const response = await fetch(`${API_BASE}/user/profile`, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json",
 					},
-				);
+					credentials: "include",
+					body: JSON.stringify(payload),
+				});
 
 				if (response.ok) {
 					alert("Данные профиля обновлены");
@@ -205,13 +193,10 @@ export const profileMount = async (): Promise<void> => {
 			if (!confirmed) return;
 
 			try {
-				const res = await fetch(
-					"https://ya-praktikum.tech/api/v2/auth/logout",
-					{
-						method: "POST",
-						credentials: "include",
-					},
-				);
+				const res = await fetch(`${API_BASE}/auth/logout`, {
+					method: "POST",
+					credentials: "include",
+				});
 
 				if (res.ok) {
 					window.location.reload();
