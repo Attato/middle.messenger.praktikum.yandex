@@ -36,14 +36,14 @@ const templateSource = `
   <div class="profile">
     <header class="title-wrap">
       <a href="/chat">Вернуться к чатам</a>
-      <h1>Профиль: <span class="profile__login">{{login}}</span></h1>  
+      <h1>Профиль: <span class="profile-login">{{login}}</span></h1>  
     </header>
 
     <form id="profile-form">
-      <div class="profile__avatar">
-        <img id="user-avatar" src="{{avatarUrl}}" alt="Аватар" class="profile__avatar-img" />
+      <div class="profile-avatar">
+        <img id="user-avatar" src="{{avatarUrl}}" alt="Аватар" />
 
-		<div class="action__wrap">
+		<div class="action-wrap">
 			<input type="file" id="avatar-input" accept="image/*" />
 			<button type="button" id="avatar-save-btn">Сохранить аватар</button>
 		</div>
@@ -51,17 +51,17 @@ const templateSource = `
 
 	  <hr />
 
-      <div class="input__wrap" id="input-wrapper"></div>
+      <div class="input-wrap" id="input-wrapper"></div>
 
-      <div class="button__wrap">
-        <button type="submit" class="button__white">Сохранить изменения</button>
+      <div class="button-wrap">
+        <button type="submit" class="save-button">Сохранить изменения</button>
       </div>
     </form>
 
     <hr />
 
-    <div class="profile__action">
-      <button id="logout-btn">Выйти из профиля</button>
+    <div class="profile-action">
+      <button id="logout-btn" class="logout-button">Выйти из профиля</button>
     </div>
   </div>
 </div>
@@ -85,7 +85,7 @@ export const profileMount = async (): Promise<void> => {
 	const avatarUrl = userData.avatar ? `${API_BASE}/resources${userData.avatar}` : "/images/avatar.webp";
 
 	const loginElement = document.createElement("span");
-	loginElement.classList.add("profile__login");
+	loginElement.classList.add("profile-login");
 	loginElement.textContent = userData.login || "";
 
 	const h1Element = document.querySelector(".profile h1");

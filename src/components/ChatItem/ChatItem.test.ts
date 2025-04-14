@@ -75,8 +75,8 @@ describe("ChatItem", () => {
 		chatItem = new ChatItem(mockProps, eventBus);
 		const element = chatItem.getElement();
 
-		expect(element.classList.contains("chatLink")).toBe(true);
-		expect(element.classList.contains(styles.chatLink)).toBe(true);
-		expect(element.querySelector("div")?.classList.contains(styles.chatLink__main)).toBe(true);
+		expect(element.classList.contains("chat-link")).toBe(true);
+		expect(element.classList.contains(styles.chat_link)).toBe(true);
+		expect(element.querySelector("div")?.classList.contains(styles.chat_link_main)).toBe(true);
 	});
 });

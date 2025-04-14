@@ -32,17 +32,17 @@ const authData = {
 const templateSource = `
 <div class="container">
     <div class="auth">
-        <div class="auth__wrap">
-            <h1 class="auth__title">{{title}}</h1>
+        <div class="auth-wrap">
+            <h1 class="auth-title">{{title}}</h1>
 
             <form id="auth-form">
-                <div class="input__wrap" id="input-wrapper"></div>
-				<button type="submit" class="button__white">{{whiteButton}}</button>
+                <div class="input-wrap" id="input-wrapper"></div>
+				<button type="submit" class="button-white">{{whiteButton}}</button>
             </form>
 
-            <div class="auth__actions">
+            <div class="auth-actions">
                 <hr />
-                <a href="{{grayButtonLink}}" class="button__gray">{{grayButton}}</a>
+                <a href="{{grayButtonLink}}" class="button-gray">{{grayButton}}</a>
             </div>
         </div>
     </div>
