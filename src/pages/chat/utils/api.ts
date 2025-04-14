@@ -1,13 +1,5 @@
 import { Chat, User } from "pages/chat/utils/interfaces";
-import { API_BASE } from "../../../api/apiBase";
-
-const checkResponse = (response: Response) => {
-	if (!response.ok) {
-		throw new Error(`Ошибка ${response.status}`);
-	}
-
-	return response;
-};
+import { API_BASE, checkResponse } from "../../../api/api";
 
 export const fetchChats = async (): Promise<Chat[]> => {
 	const response = await fetch(`${API_BASE}/chats`, {

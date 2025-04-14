@@ -7,7 +7,7 @@ import { profileRender, profileMount } from "pages/profile/profile";
 import { error404Render } from "pages/error/404";
 import { error500Render } from "pages/error/500";
 
-import { checkAuthStatus } from "pages/auth/utils/api";
+import { checkAuthStatus } from "../api/api";
 
 const router = Router.getInstance();
 

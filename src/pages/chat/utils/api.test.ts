@@ -13,7 +13,7 @@ import {
 } from "./api";
 import { Chat } from "pages/chat/utils/interfaces";
 
-import { API_BASE } from "../../../api/apiBase";
+import { API_BASE } from "../../../api/api";
 
 global.fetch = jest.fn();
 

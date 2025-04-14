@@ -3,7 +3,7 @@ import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
 import { attachValidationToForm } from "pages/auth/utils/formValidator";
 
-import { API_BASE } from "../../api/apiBase";
+import { signUp } from "./utils/api";
 
 import "pages/auth/auth.scss";
 
@@ -88,31 +88,18 @@ export const signUpMount = (): void => {
 			e.preventDefault();
 
 			const formData = new FormData(form);
-			const payload: Record<string, string> = {};
-
-			signUpData.fields.forEach((field) => {
-				const value = formData.get(field.name);
-				if (value) {
-					payload[field.name] = value.toString();
-				}
-			});
 
 			try {
-				const response = await fetch(`${API_BASE}/auth/signup`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					credentials: "include",
-					body: JSON.stringify(payload),
+				await signUp({
+					first_name: formData.get("first_name")?.toString() || "",
+					second_name: formData.get("second_name")?.toString() || "",
+					login: formData.get("login")?.toString() || "",
+					email: formData.get("email")?.toString() || "",
+					password: formData.get("password")?.toString() || "",
+					phone: formData.get("phone")?.toString() || "",
 				});
 
-				if (response.ok) {
-					window.location.href = "/chat";
-				} else {
-					const error = await response.json();
-					alert(`Ошибка: ${error.reason}`);
-				}
+				window.location.href = "/chat";
 			} catch (err) {
 				console.error("Ошибка при регистрации:", err);
 				alert("Сервер недоступен. Попробуйте позже.");

@@ -5,9 +5,7 @@ export function attachValidationToForm(form: HTMLFormElement) {
 
 	inputs.forEach((input) => {
 		input.addEventListener("blur", (event) => {
-			const target = event.target as
-				| HTMLInputElement
-				| HTMLTextAreaElement;
+			const target = event.target as HTMLInputElement | HTMLTextAreaElement;
 			const error = validateField(target.name, target.value);
 			displayError(target, error);
 		});
@@ -32,10 +30,7 @@ export function attachValidationToForm(form: HTMLFormElement) {
 	});
 }
 
-function displayError(
-	input: HTMLInputElement | HTMLTextAreaElement,
-	error: string | null,
-) {
+function displayError(input: HTMLInputElement | HTMLTextAreaElement, error: string | null) {
 	let errorElement = input.nextElementSibling as HTMLElement;
 	if (!errorElement || !errorElement.classList.contains("error")) {
 		errorElement = document.createElement("div");
@@ -47,6 +42,7 @@ function displayError(
 		errorElement.textContent = error;
 		errorElement.style.display = "block";
 		errorElement.style.color = "#e84033";
+		errorElement.style.maxHeight = "fit-content";
 	} else {
 		errorElement.style.display = "none";
 	}

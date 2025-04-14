@@ -2,8 +2,8 @@ import Handlebars from "handlebars";
 import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
 import { fetchCurrentUser, updateUserAvatar } from "pages/chat/utils/api";
-import { API_BASE } from "../../api/apiBase";
-
+import { API_BASE } from "../../api/api";
+import { updateProfile, logout } from "./utils/api";
 import "pages/profile/profile.scss";
 
 const profileData = {
@@ -154,32 +154,17 @@ export const profileMount = async (): Promise<void> => {
 			});
 
 			try {
-				const response = await fetch(`${API_BASE}/user/profile`, {
-					method: "PUT",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					credentials: "include",
-					body: JSON.stringify(payload),
-				});
+				await updateProfile(payload);
+				alert("Данные профиля обновлены");
 
-				if (response.ok) {
-					alert("Данные профиля обновлены");
-
-					for (const field of profileData.fields) {
-						const inputElement = document.querySelector(
-							`input[name=${field.name}]`,
-						) as HTMLInputElement | null;
-						if (inputElement) {
-							userData[field.name] = inputElement.value;
-						}
+				for (const field of profileData.fields) {
+					const inputElement = document.querySelector(`input[name=${field.name}]`) as HTMLInputElement | null;
+					if (inputElement) {
+						userData[field.name] = inputElement.value;
 					}
-
-					loginElement.textContent = userData.login || "";
-				} else {
-					const error = await response.json();
-					alert(`Ошибка: ${error.reason}`);
 				}
+
+				loginElement.textContent = userData.login || "";
 			} catch (err) {
 				console.error("Ошибка при обновлении профиля:", err);
 				alert("Не удалось сохранить изменения");
@@ -193,17 +178,8 @@ export const profileMount = async (): Promise<void> => {
 			if (!confirmed) return;
 
 			try {
-				const res = await fetch(`${API_BASE}/auth/logout`, {
-					method: "POST",
-					credentials: "include",
-				});
-
-				if (res.ok) {
-					window.location.reload();
-				} else {
-					const error = await res.json();
-					alert("Ошибка: " + error.reason);
-				}
+				await logout();
+				window.location.reload();
 			} catch (err) {
 				console.error("Ошибка при выходе:", err);
 			}

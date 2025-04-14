@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
-import { API_BASE } from "../../api/apiBase";
+import { signIn } from "./utils/api";
 
 import "pages/auth/auth.scss";
 
@@ -74,27 +74,9 @@ export const signInMount = (): void => {
 			const login = formData.get("login") as string;
 			const password = formData.get("password") as string;
 
-			const payload = {
-				login,
-				password,
-			};
-
 			try {
-				const response = await fetch(`${API_BASE}/auth/signin`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(payload),
-					credentials: "include",
-				});
-
-				if (response.ok) {
-					window.location.href = "/chat";
-				} else {
-					const error = await response.json();
-					alert(`Ошибка: ${error.reason}`);
-				}
+				await signIn({ login, password });
+				window.location.href = "/chat";
 			} catch (err) {
 				console.error("Ошибка при отправке запроса:", err);
 				alert("Сервер недоступен. Попробуйте позже.");
