@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "baseUrl": "src/",
-    "target": "es2016",                                
-    "module": "commonjs",                                
+    "target": "es2016",                                 
+    "module": "ESNext",                                
     "esModuleInterop": true,                           
     "forceConsistentCasingInFileNames": true,           
     "strict": true,                                    
@@ -11,6 +11,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "sourceMap": true,
-    "strictNullChecks": true                       
+    "strictNullChecks": true                        
   }
 }
