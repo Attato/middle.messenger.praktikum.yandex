@@ -18,14 +18,14 @@ export class ChatItem extends Block<ChatItemProps> {
 
 	protected createElement(): HTMLElement {
 		const container = document.createElement("div");
-		container.classList.add("chatLink");
-		container.classList.add(styles.chatLink);
+		container.classList.add("chat-link");
+		container.classList.add(styles.chat_link);
 
 		const main = document.createElement("div");
-		main.classList.add(styles.chatLink__main);
+		main.classList.add(styles.chat_link_main);
 
 		const header = document.createElement("div");
-		header.classList.add(styles.chatLink__header);
+		header.classList.add(styles.chat_link_header);
 
 		const title = document.createElement("h2");
 		title.textContent = this.props.title;
@@ -37,18 +37,11 @@ export class ChatItem extends Block<ChatItemProps> {
 		header.appendChild(message);
 
 		const data = document.createElement("div");
-		data.classList.add(styles.chatLink__data);
+		data.classList.add(styles.chat_link_data);
 
 		const time = document.createElement("span");
 		time.textContent = this.props.lastMessageTime;
 		data.appendChild(time);
-
-		if (this.props.unreadCount && this.props.unreadCount > 0) {
-			const badge = document.createElement("div");
-			badge.classList.add(styles.chatLink__count);
-			badge.textContent = String(this.props.unreadCount);
-			data.appendChild(badge);
-		}
 
 		main.appendChild(header);
 		main.appendChild(data);
@@ -59,7 +52,7 @@ export class ChatItem extends Block<ChatItemProps> {
 			const avatar = document.createElement("img");
 			avatar.src = avatarUrl;
 			avatar.alt = "Аватар чата";
-			avatar.classList.add(styles.chatLink__avatar);
+			avatar.classList.add(styles.chat_link_avatar);
 			container.appendChild(avatar);
 		}
 

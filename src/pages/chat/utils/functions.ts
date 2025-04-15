@@ -13,10 +13,7 @@ import {
 	getUserAvatarUrl,
 } from "pages/chat/utils/api";
 
-import {
-	saveMessagesLocally,
-	getMessagesFromLocalStorage,
-} from "pages/chat/utils/storage";
+import { saveMessagesLocally, getMessagesFromLocalStorage } from "pages/chat/utils/storage";
 
 import { Chat, Message } from "pages/chat/utils/interfaces";
 
@@ -56,15 +53,11 @@ export const updateChatUsers = async (chatId: number): Promise<void> => {
     `;
 	} catch (err) {
 		console.error("Ошибка загрузки участников:", err);
-		usersListContainer.innerHTML =
-			"<p class='error'>Не удалось загрузить участников</p>";
+		usersListContainer.innerHTML = "<p class='error'>Не удалось загрузить участников</p>";
 	}
 };
 
-export const loadChatContent = async (
-	chatId: number,
-	chats: Chat[],
-): Promise<void> => {
+export const loadChatContent = async (chatId: number, chats: Chat[]): Promise<void> => {
 	currentChatId = chatId;
 
 	const selectedChat = chats.find((chat) => chat.id === chatId);
@@ -74,7 +67,7 @@ export const loadChatContent = async (
 		return;
 	}
 
-	const chatContent = document.querySelector(".messenger__chat");
+	const chatContent = document.querySelector(".messenger-chat");
 
 	if (chatContent) {
 		const messagesHtml = await loadMessagesForChat();
@@ -83,28 +76,20 @@ export const loadChatContent = async (
 
 		updateChatUsers(selectedChat.id);
 
-		const chatAvatar = document.getElementById(
-			"chat-avatar",
-		) as HTMLImageElement;
-		const avatarUrl =
-			getChatAvatarUrl(selectedChat) ?? "/images/avatar.webp";
+		const chatAvatar = document.getElementById("chat-avatar") as HTMLImageElement;
+		const avatarUrl = getChatAvatarUrl(selectedChat) ?? "/images/avatar.webp";
 
 		if (chatAvatar) {
 			chatAvatar.src = `${avatarUrl}?t=${new Date().getTime()}`;
 		}
 
-		const avatarFileInput = document.getElementById(
-			"avatar-file-input",
-		) as HTMLInputElement;
-		const saveAvatarButton = document.getElementById(
-			"save-avatar-button",
-		) as HTMLButtonElement;
+		const avatarFileInput = document.getElementById("avatar-file-input") as HTMLInputElement;
+		const saveAvatarButton = document.getElementById("save-avatar-button") as HTMLButtonElement;
 
 		let selectedFile: File | null = null;
 
 		avatarFileInput?.addEventListener("change", (event) => {
-			selectedFile =
-				(event.target as HTMLInputElement).files?.[0] ?? null;
+			selectedFile = (event.target as HTMLInputElement).files?.[0] ?? null;
 		});
 
 		saveAvatarButton?.addEventListener("click", async () => {
@@ -121,13 +106,10 @@ export const loadChatContent = async (
 
 					await updateChatAvatar(formData);
 
-					const updatedAvatarUrl =
-						await getChatAvatarUrl(selectedChat);
+					const updatedAvatarUrl = await getChatAvatarUrl(selectedChat);
 
 					if (updatedAvatarUrl) {
-						const chatAvatar = document.getElementById(
-							"chat-avatar",
-						) as HTMLImageElement;
+						const chatAvatar = document.getElementById("chat-avatar") as HTMLImageElement;
 						if (chatAvatar) {
 							chatAvatar.src = updatedAvatarUrl;
 						}
@@ -148,19 +130,11 @@ export const loadChatContent = async (
 		});
 
 		const messageForm = document.getElementById("message-form");
-		const messageInput = document.getElementById(
-			"message",
-		) as HTMLInputElement;
+		const messageInput = document.getElementById("message") as HTMLInputElement;
 
-		const userIdInput = document.getElementById(
-			"user-id-input",
-		) as HTMLInputElement;
-		const addUserBtn = document.getElementById(
-			"add-user-button",
-		) as HTMLButtonElement;
-		const removeUserBtn = document.getElementById(
-			"remove-user-button",
-		) as HTMLButtonElement;
+		const userIdInput = document.getElementById("user-id-input") as HTMLInputElement;
+		const addUserBtn = document.getElementById("add-user-button") as HTMLButtonElement;
+		const removeUserBtn = document.getElementById("remove-user-button") as HTMLButtonElement;
 
 		messageForm?.addEventListener("submit", (event) => {
 			event.preventDefault();
@@ -239,20 +213,13 @@ const formatTime = (time: Date | string): string => {
 	});
 };
 
-const formatMessage = async (
-	messageData: Partial<Message>,
-	typeOverride?: "sent" | "received",
-): Promise<Message> => {
+const formatMessage = async (messageData: Partial<Message>, typeOverride?: "sent" | "received"): Promise<Message> => {
 	const currentUser = await fetchCurrentUser();
 
 	return {
 		content: messageData.content ?? "",
-		time: messageData.time
-			? formatTime(messageData.time)
-			: formatTime(new Date()),
-		type:
-			typeOverride ??
-			(messageData.userId === currentUser.id ? "sent" : "received"),
+		time: messageData.time ? formatTime(messageData.time) : formatTime(new Date()),
+		type: typeOverride ?? (messageData.userId === currentUser.id ? "sent" : "received"),
 		userId: messageData.userId ?? currentUser.id,
 		userLogin: messageData.userLogin ?? currentUser.login,
 	};
@@ -260,15 +227,15 @@ const formatMessage = async (
 
 const renderMessageHtml = (message: Message): string => {
 	return `
-    <div class="message message--${message.type}">
-      <div class="message__sender">
-        <span class="message__sender-login">${message.userLogin}</span> 
-        <span class="message__sender-id">(ID: ${message.userId})</span>
+    <div class="message message-${message.type}">
+      <div class="message-sender">
+        <span class="message-sender-login">${message.userLogin}</span> 
+        <span class="message-sender-id">(ID: ${message.userId})</span>
       </div>
 
-      <div class="message__content">
+      <div class="message-content">
         <p>${message.content}</p>
-        <span class="message__time">${message.time}</span>
+        <span class="message-time">${message.time}</span>
       </div>
     </div>`;
 };
@@ -339,26 +306,20 @@ const addMessageToChat = (message: Message, chats: Chat[]): void => {
 	}
 };
 
-const handleSendMessage = async (
-	chats: Chat[],
-	messageContent: string,
-): Promise<void> => {
+const handleSendMessage = async (chats: Chat[], messageContent: string): Promise<void> => {
 	const messageInput = document.getElementById("message") as HTMLInputElement;
 	const messageContentFinal = messageContent.trim();
 
 	if (messageContentFinal && currentChatId !== null) {
 		const currentUser = await fetchCurrentUser();
-		const newMessage = await formatMessage(
-			{ content: messageContentFinal, userLogin: currentUser.login },
-			"sent",
-		);
+		const newMessage = await formatMessage({ content: messageContentFinal, userLogin: currentUser.login }, "sent");
 
 		addMessageToChat(newMessage, chats);
 		sendMessage(messageContentFinal);
 
 		messageInput.value = "";
 
-		const messengerChat = document.querySelector(".messenger__chat");
+		const messengerChat = document.querySelector(".messenger-chat");
 		if (messengerChat) {
 			messengerChat.scrollTop = messengerChat.scrollHeight;
 		}
@@ -366,9 +327,7 @@ const handleSendMessage = async (
 	}
 };
 
-export const handleIncomingMessage = async (
-	messageData: Message,
-): Promise<void> => {
+export const handleIncomingMessage = async (messageData: Message): Promise<void> => {
 	if (currentChatId === null) return;
 
 	const currentUser = await fetchCurrentUser();

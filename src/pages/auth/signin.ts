@@ -1,6 +1,7 @@
 import Handlebars from "handlebars";
 import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
+import { signIn } from "./utils/api";
 
 import "pages/auth/auth.scss";
 
@@ -31,17 +32,17 @@ const authData = {
 const templateSource = `
 <div class="container">
     <div class="auth">
-        <div class="auth__wrap">
-            <h1 class="auth__title">{{title}}</h1>
+        <div class="auth-wrap">
+            <h1 class="auth-title">{{title}}</h1>
 
             <form id="auth-form">
-                <div class="input__wrap" id="input-wrapper"></div>
-				<button type="submit" class="button__white">{{whiteButton}}</button>
+                <div class="input-wrap" id="input-wrapper"></div>
+				<button type="submit" class="button-white">{{whiteButton}}</button>
             </form>
 
-            <div class="auth__actions">
+            <div class="auth-actions">
                 <hr />
-                <a href="{{grayButtonLink}}" class="button__gray">{{grayButton}}</a>
+                <a href="{{grayButtonLink}}" class="button-gray">{{grayButton}}</a>
             </div>
         </div>
     </div>
@@ -73,30 +74,9 @@ export const signInMount = (): void => {
 			const login = formData.get("login") as string;
 			const password = formData.get("password") as string;
 
-			const payload = {
-				login,
-				password,
-			};
-
 			try {
-				const response = await fetch(
-					"https://ya-praktikum.tech/api/v2/auth/signin",
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify(payload),
-						credentials: "include",
-					},
-				);
-
-				if (response.ok) {
-					window.location.href = "/chat";
-				} else {
-					const error = await response.json();
-					alert(`Ошибка: ${error.reason}`);
-				}
+				await signIn({ login, password });
+				window.location.href = "/chat";
 			} catch (err) {
 				console.error("Ошибка при отправке запроса:", err);
 				alert("Сервер недоступен. Попробуйте позже.");

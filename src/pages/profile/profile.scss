@@ -27,14 +27,14 @@
 				font-size: 17px;
 				font-weight: 400;
 
-				.profile__login {
+				.profile-login {
 					color: $green-color;
 				}
 			}
 		}
 
 		#profile-form {
-			.profile__avatar {
+			.profile-avatar {
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
@@ -44,11 +44,13 @@
 
 				img {
 					max-width: 256px;
+					max-height: 256px;
+					height: 100%;
 					width: 100%;
 					border-radius: 100%;
 				}
 
-				.action__wrap {
+				.action-wrap {
 					display: flex;
 					flex-direction: column;
 					gap: 12px;
@@ -64,28 +66,28 @@
 				}
 			}
 
-			.input__wrap {
+			.input-wrap {
 				display: flex;
 				flex-direction: column;
 				gap: 12px;
 				margin-top: 12px;
 			}
 
-			.button__wrap {
+			.button-wrap {
 				width: 100%;
 				display: flex;
 				margin-top: 12px;
 
-				button {
+				.save-button {
 					width: 100%;
 				}
 			}
 		}
 
-		.profile__action {
+		.profile-action {
 			margin-top: 12px;
 
-			button {
+			.logout-button {
 				background-color: $red-color;
 				border-color: #f44336;
 				width: 100%;

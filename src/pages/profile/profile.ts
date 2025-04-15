@@ -1,12 +1,9 @@
 import Handlebars from "handlebars";
 import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
-import {
-	API_BASE,
-	fetchCurrentUser,
-	updateUserAvatar,
-} from "pages/chat/utils/api";
-
+import { fetchCurrentUser, updateUserAvatar } from "pages/chat/utils/api";
+import { API_BASE } from "../../api/api";
+import { updateProfile, logout } from "./utils/api";
 import "pages/profile/profile.scss";
 
 const profileData = {
@@ -39,14 +36,14 @@ const templateSource = `
   <div class="profile">
     <header class="title-wrap">
       <a href="/chat">Вернуться к чатам</a>
-      <h1>Профиль: <span class="profile__login">{{login}}</span></h1>  
+      <h1>Профиль: <span class="profile-login">{{login}}</span></h1>  
     </header>
 
     <form id="profile-form">
-      <div class="profile__avatar">
-        <img id="user-avatar" src="{{avatarUrl}}" alt="Аватар" class="profile__avatar-img" />
+      <div class="profile-avatar">
+        <img id="user-avatar" src="{{avatarUrl}}" alt="Аватар" />
 
-		<div class="action__wrap">
+		<div class="action-wrap">
 			<input type="file" id="avatar-input" accept="image/*" />
 			<button type="button" id="avatar-save-btn">Сохранить аватар</button>
 		</div>
@@ -54,17 +51,17 @@ const templateSource = `
 
 	  <hr />
 
-      <div class="input__wrap" id="input-wrapper"></div>
+      <div class="input-wrap" id="input-wrapper"></div>
 
-      <div class="button__wrap">
-        <button type="submit" class="button__white">Сохранить изменения</button>
+      <div class="button-wrap">
+        <button type="submit" class="save-button">Сохранить изменения</button>
       </div>
     </form>
 
     <hr />
 
-    <div class="profile__action">
-      <button id="logout-btn">Выйти из профиля</button>
+    <div class="profile-action">
+      <button id="logout-btn" class="logout-button">Выйти из профиля</button>
     </div>
   </div>
 </div>
@@ -85,12 +82,10 @@ export const profileMount = async (): Promise<void> => {
 		return;
 	}
 
-	const avatarUrl = userData.avatar
-		? `${API_BASE}/resources${userData.avatar}`
-		: "/images/avatar.webp";
+	const avatarUrl = userData.avatar ? `${API_BASE}/resources${userData.avatar}` : "/images/avatar.webp";
 
 	const loginElement = document.createElement("span");
-	loginElement.classList.add("profile__login");
+	loginElement.classList.add("profile-login");
 	loginElement.textContent = userData.login || "";
 
 	const h1Element = document.querySelector(".profile h1");
@@ -103,16 +98,12 @@ export const profileMount = async (): Promise<void> => {
 	const form = document.getElementById("profile-form") as HTMLFormElement;
 	const logoutBtn = document.getElementById("logout-btn");
 
-	const userAvatarElement = document.getElementById(
-		"user-avatar",
-	) as HTMLImageElement;
+	const userAvatarElement = document.getElementById("user-avatar") as HTMLImageElement;
 	if (userAvatarElement) {
 		userAvatarElement.src = avatarUrl;
 	}
 
-	const avatarInput = document.getElementById(
-		"avatar-input",
-	) as HTMLInputElement;
+	const avatarInput = document.getElementById("avatar-input") as HTMLInputElement;
 	const avatarSaveBtn = document.getElementById("avatar-save-btn");
 
 	if (avatarInput && avatarSaveBtn) {
@@ -163,35 +154,17 @@ export const profileMount = async (): Promise<void> => {
 			});
 
 			try {
-				const response = await fetch(
-					"https://ya-praktikum.tech/api/v2/user/profile",
-					{
-						method: "PUT",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						credentials: "include",
-						body: JSON.stringify(payload),
-					},
-				);
+				await updateProfile(payload);
+				alert("Данные профиля обновлены");
 
-				if (response.ok) {
-					alert("Данные профиля обновлены");
-
-					for (const field of profileData.fields) {
-						const inputElement = document.querySelector(
-							`input[name=${field.name}]`,
-						) as HTMLInputElement | null;
-						if (inputElement) {
-							userData[field.name] = inputElement.value;
-						}
+				for (const field of profileData.fields) {
+					const inputElement = document.querySelector(`input[name=${field.name}]`) as HTMLInputElement | null;
+					if (inputElement) {
+						userData[field.name] = inputElement.value;
 					}
-
-					loginElement.textContent = userData.login || "";
-				} else {
-					const error = await response.json();
-					alert(`Ошибка: ${error.reason}`);
 				}
+
+				loginElement.textContent = userData.login || "";
 			} catch (err) {
 				console.error("Ошибка при обновлении профиля:", err);
 				alert("Не удалось сохранить изменения");
@@ -205,20 +178,8 @@ export const profileMount = async (): Promise<void> => {
 			if (!confirmed) return;
 
 			try {
-				const res = await fetch(
-					"https://ya-praktikum.tech/api/v2/auth/logout",
-					{
-						method: "POST",
-						credentials: "include",
-					},
-				);
-
-				if (res.ok) {
-					window.location.reload();
-				} else {
-					const error = await res.json();
-					alert("Ошибка: " + error.reason);
-				}
+				await logout();
+				window.location.reload();
 			} catch (err) {
 				console.error("Ошибка при выходе:", err);
 			}

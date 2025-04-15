@@ -14,7 +14,7 @@
 		width: 100%;
 		min-height: 100vh;
 
-		.auth__wrap {
+		.auth-wrap {
 			display: flex;
 			flex-direction: column;
 			max-width: 400px;
@@ -25,7 +25,7 @@
 			padding: 16px;
 			gap: 12px;
 
-			.auth__title {
+			.auth-title {
 				text-align: center;
 				font-size: 24px;
 				font-weight: 500;
@@ -33,13 +33,13 @@
 			}
 
 			#auth-form {
-				.input__wrap {
+				.input-wrap {
 					display: flex;
 					flex-direction: column;
 					gap: 8px;
 				}
 
-				.button__white {
+				.button-white {
 					width: 100%;
 					background-color: $white-color;
 					margin-top: 8px;
@@ -51,7 +51,7 @@
 				}
 			}
 
-			.auth__actions {
+			.auth-actions {
 				display: flex;
 				flex-direction: column;
 				gap: 12px;
@@ -72,7 +72,7 @@
 					border-color: $border-color;
 				}
 
-				.button__gray {
+				.button-gray {
 					background-color: $gray-background;
 					color: $white-color;
 

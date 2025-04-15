@@ -17,7 +17,8 @@ class Router {
 			pathname,
 			block,
 			match(pathname: string): boolean {
-				return pathname === this.pathname;
+				const routePattern = new RegExp(`^${this.pathname}$`);
+				return routePattern.test(pathname);
 			},
 			async render(route: Route): Promise<void> {
 				try {
@@ -74,7 +75,8 @@ class Router {
 		try {
 			await route.render(route);
 		} catch (error) {
-			const serverErrorRoute = this.getRoute("/500");
+			console.error("Ошибка при рендере маршрута:", error);
+			const serverErrorRoute = this.getRoute("500");
 			if (serverErrorRoute) {
 				await serverErrorRoute.render(serverErrorRoute);
 			}

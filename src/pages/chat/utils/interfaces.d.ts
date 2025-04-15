@@ -10,7 +10,6 @@ export interface Chat {
 	title: string;
 	lastMessage: string;
 	lastMessageTime: string;
-	unreadCount: number;
 	messages: Message[];
 }
 
@@ -20,4 +19,10 @@ export interface Message {
 	content: string;
 	time: string;
 	type: "sent" | "received";
+}
+
+export interface User {
+	id: number;
+	login: string;
+	avatar: string | null;
 }

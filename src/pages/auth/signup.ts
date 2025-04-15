@@ -3,6 +3,8 @@ import { Input, InputProps } from "../../components/Input/Input";
 import { EventBus } from "../../components/EventBus";
 import { attachValidationToForm } from "pages/auth/utils/formValidator";
 
+import { signUp } from "./utils/api";
+
 import "pages/auth/auth.scss";
 
 const signUpData = {
@@ -45,17 +47,17 @@ const signUpData = {
 const templateSource = ` 
 <div class="container">
     <div class="auth">
-        <div class="auth__wrap">
-            <h1 class="auth__title">{{title}}</h1>
+        <div class="auth-wrap">
+            <h1 class="auth-title">{{title}}</h1>
 
             <form id="auth-form">
-                <div class="input__wrap" id="input-wrapper"></div>
-                <button type="submit" class="button__white">{{whiteButton}}</button>
+                <div class="input-wrap" id="input-wrapper"></div>
+                <button type="submit" class="button-white">{{whiteButton}}</button>
             </form>
 
-            <div class="auth__actions">
+            <div class="auth-actions">
                 <hr />
-                <a href="{{grayButtonLink}}" class="button__gray">{{grayButton}}</a>
+                <a href="{{grayButtonLink}}" class="button-gray">{{grayButton}}</a>
             </div>
         </div>
     </div>
@@ -86,34 +88,18 @@ export const signUpMount = (): void => {
 			e.preventDefault();
 
 			const formData = new FormData(form);
-			const payload: Record<string, string> = {};
-
-			signUpData.fields.forEach((field) => {
-				const value = formData.get(field.name);
-				if (value) {
-					payload[field.name] = value.toString();
-				}
-			});
 
 			try {
-				const response = await fetch(
-					"https://ya-praktikum.tech/api/v2/auth/signup",
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						credentials: "include",
-						body: JSON.stringify(payload),
-					},
-				);
+				await signUp({
+					first_name: formData.get("first_name")?.toString() || "",
+					second_name: formData.get("second_name")?.toString() || "",
+					login: formData.get("login")?.toString() || "",
+					email: formData.get("email")?.toString() || "",
+					password: formData.get("password")?.toString() || "",
+					phone: formData.get("phone")?.toString() || "",
+				});
 
-				if (response.ok) {
-					window.location.href = "/chat";
-				} else {
-					const error = await response.json();
-					alert(`Ошибка: ${error.reason}`);
-				}
+				window.location.href = "/chat";
 			} catch (err) {
 				console.error("Ошибка при регистрации:", err);
 				alert("Сервер недоступен. Попробуйте позже.");

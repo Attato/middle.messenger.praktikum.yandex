@@ -7,7 +7,7 @@ import { profileRender, profileMount } from "pages/profile/profile";
 import { error404Render } from "pages/error/404";
 import { error500Render } from "pages/error/500";
 
-import { checkAuthStatus } from "pages/auth/utils/api";
+import { checkAuthStatus } from "../api/api";
 
 const router = Router.getInstance();
 
@@ -76,7 +76,7 @@ router
 			mainPage.innerHTML = error404Render();
 		}
 	})
-	.use("/500", async () => {
+	.use("500", async () => {
 		const mainPage = document.getElementById("main-page");
 		if (mainPage) {
 			mainPage.innerHTML = "";

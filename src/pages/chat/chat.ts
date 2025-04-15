@@ -14,7 +14,7 @@ export let currentChatId: number | null = null;
 
 const templateSource = `
 <div class="messenger">
-	<div class="messenger__sidebar" id="messenger__sidebar">
+	<div class="messenger-sidebar" id="messenger-sidebar">
 		<a href="/profile">Профиль</a>
 		<form id="create-chat-form" class="create-chat-form">
 			<input 
@@ -26,7 +26,7 @@ const templateSource = `
 			<button type="submit">+</button>
 		</form>
 	</div>
-	<div class="messenger__chat"></div>
+	<div class="messenger-chat"></div>
 </div>
 `;
 
@@ -37,8 +37,8 @@ export const chatRender = (): string => {
 
 export const chatMount = async (): Promise<void> => {
 	const eventBus = new EventBus();
-	const chatList = document.getElementById("messenger__sidebar");
-	const chatArea = document.querySelector(".messenger__chat");
+	const chatList = document.getElementById("messenger-sidebar");
+	const chatArea = document.querySelector(".messenger-chat");
 
 	if (!chatList || !chatArea) return;
 
@@ -66,10 +66,9 @@ export const chatMount = async (): Promise<void> => {
 
 						if (currentChatId === chat.id) {
 							currentChatId = null;
-							const chatArea =
-								document.querySelector(".messenger__chat");
+							const chatArea = document.querySelector(".messenger-chat");
 							if (chatArea) {
-								chatArea.innerHTML = `<div class="messenger__placeholder">Выберите, кому хотели бы написать</div>`;
+								chatArea.innerHTML = `<div class="messenger-placeholder">Выберите, кому хотели бы написать</div>`;
 							}
 						}
 					} catch (err) {
@@ -97,15 +96,11 @@ export const chatMount = async (): Promise<void> => {
 	}
 
 	if (chatArea) {
-		chatArea.innerHTML = `<div class="messenger__placeholder">Выберите, кому хотели бы написать</div>`;
+		chatArea.innerHTML = `<div class="messenger-placeholder">Выберите, кому хотели бы написать</div>`;
 	}
 
-	const createChatForm = document.getElementById(
-		"create-chat-form",
-	) as HTMLFormElement;
-	const newChatTitleInput = document.getElementById(
-		"new-chat-title",
-	) as HTMLInputElement;
+	const createChatForm = document.getElementById("create-chat-form") as HTMLFormElement;
+	const newChatTitleInput = document.getElementById("new-chat-title") as HTMLInputElement;
 
 	createChatForm?.addEventListener("submit", async (event) => {
 		event.preventDefault();
